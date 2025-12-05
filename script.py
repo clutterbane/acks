@@ -59,6 +59,19 @@ def roll_class_from_ACKS():
         if cls != "Special":
             return cls
 
+corrupting_weaknesses = {
+    "Disfigured": {"limit": None},        # unlimited
+    "Distrusted": {"limit": None},        # unlimited
+    "Enervated": {"limit": None},         # unlimited
+    "Frightening to Beasts": {"limit": 1},
+    "Haunted": {"limit": None},           # unlimited
+    "Mad": {"limit": 1},
+    "Mutated": {"limit": None},           # unlimited
+    "Nocturnal": {"limit": None},         # unlimited
+    "Obsessed": {"limit": None},          # unlimited
+    "Sleepless": {"limit": 5},
+}
+
 # WITCH TRADITIONS
 
 witch_traditions = {
@@ -2495,6 +2508,29 @@ def run_generator(final_class, level):
         # tu dodasz kolejne klasy
     }
 
+    #CORRUPTING WEAKNESSES
+    def roll_corrupting_weakness(owned):
+        """
+        Zwraca jedną wylosowaną Corrupting Weakness z uwzględnieniem limitów.
+        owned – dict z aktualną liczbą posiadanych słabości:
+            {"Disfigured": 2, "Sleepless": 1, ...}
+        """
+        candidates = []
+
+        for weakness, data in corrupting_weaknesses.items():
+            limit = data["limit"]
+            current = owned.get(weakness, 0)
+
+            # jeśli ma limit i jest osiągnięty → pomijamy
+            if limit is not None and current >= limit:
+                continue
+
+            candidates.append(weakness)
+
+        if not candidates:
+            return None  # teoretycznie niemożliwe, ale bezpieczne
+
+        return random.choice(candidates)
 
     def apply_class_powers(final_class, level, warlock_path=warlock_path, witch_tradition=witch_tradition):
         """
@@ -2515,6 +2551,21 @@ def run_generator(final_class, level):
                 continue
 
             for power in prog[power_level]:
+
+                # --- WARLOCK: CORRUPTING WEAKNESS ---
+                if final_class == "Warlock" and "Corrupting Weakness" in power:
+                    # utrzymujemy licznik posiadanych Weaknesses
+                    if "weakness_count" not in locals():
+                        weakness_count = {}
+
+                    w = roll_corrupting_weakness(weakness_count)
+
+                    if w:
+                        weakness_count[w] = weakness_count.get(w, 0) + 1
+                        powers.append(w)
+                        log.append((power_level, "Class Power", w))
+
+                    continue
 
                 # ---- SPECJALNA OBSŁUGA WARLOCKA ----
                 if final_class == "Warlock" and "Dark Path" in power:
@@ -3290,7 +3341,7 @@ def run_generator(final_class, level):
     p("Alignment:", alignment)
 
     if final_class == "Warlock":
-        p(f"Dark Path: {warlock_path} ---")
+        p(f"Dark Path: {warlock_path} ")
 
     if final_class == "Witch":
         p(f"Witch Tradition: {witch_tradition}")
