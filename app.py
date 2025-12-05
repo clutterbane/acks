@@ -7,7 +7,7 @@ st.title("ACKS NPC Generator")
 
 class_list = sorted(ALL_CLASSES)
 
-final_class = st.selectbox("Wybierz klasę:", class_list)
+final_class = st.selectbox("Choose class", ["Random"] + sorted(ALL_CLASSES))
 level = st.number_input("Wybierz poziom:", min_value=1, max_value=14, value=1)
 
 if st.button("Generuj NPC"):

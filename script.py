@@ -1,3 +1,5 @@
+import random
+
 ALL_CLASSES = {
         "Mage", "Thief", "Crusader", "Fighter", "Explorer", "Venturer",
         "Bard", "Bladedancer", "Assassin", "Priestess", "Shaman", "Barbarian",
@@ -7,6 +9,56 @@ ALL_CLASSES = {
         "Nobiran Wonderworker", "Zaharan Ruinguard"
     }
 
+# --------------------------------------------------------------------
+#  ACKS CLASS TABLE (exact reproduction of probabilities)
+# --------------------------------------------------------------------
+ACKS_TABLE = [
+    # row_min, row_max, 8-column class block
+    (1, 10,  ["Mage", "Mage", "Mage", "Mage", "Elven Spellsword", "Warlock", "Warlock", "Nobiran Wonderworker"]),
+    (11, 30, ["Thief", "Bard", "Assassin", "Thief", "Elven Nightblade", "Special", "Special", "Special"]),
+    (31, 50, ["Crusader", "Bladedancer", "Priestess", "Shaman", "Dwarven Craftpriest", "Witch", "Witch", "Special"]),
+    (51, 75, ["Fighter", "Fighter", "Fighter", "Barbarian", "Dwarven Vaultguard", "Paladin", "Paladin", "Zaharan Ruinguard"]),
+    (76, 90, ["Explorer", "Explorer", "Explorer", "Explorer", "Special", "Special", "Special", "Special"]),
+    (91, 100,["Venturer", "Venturer", "Venturer", "Venturer", "Special", "Special", "Special", "Special"]),
+]
+
+def get_column_index(col_roll):
+    """Maps 1d100 roll to ACKS column index."""
+    if col_roll <= 40:
+        return 0
+    elif col_roll <= 60:
+        return 1
+    elif col_roll <= 80:
+        return 2
+    elif col_roll <= 90:
+        return 3
+    elif col_roll <= 94:
+        return 4
+    elif col_roll <= 96:
+        return 5
+    elif col_roll <= 98:
+        return 6
+    else:
+        return 7
+
+def roll_class_from_ACKS():
+    """Rolls class exactly according to the ACKS NPC class table."""
+    row_roll = random.randint(1, 100)
+
+    # find row
+    for row_min, row_max, row_classes in ACKS_TABLE:
+        if row_min <= row_roll <= row_max:
+            break
+
+    # roll column, reroll if "Special"
+    while True:
+        col_roll = random.randint(1, 100)
+        idx = get_column_index(col_roll)
+        cls = row_classes[idx]
+
+        if cls != "Special":
+            return cls
+
 def run_generator(final_class, level):
     import io
     out = io.StringIO()
@@ -14,8 +66,11 @@ def run_generator(final_class, level):
     def p(*args, **kwargs):
         print(*args, file=out, **kwargs)
 
-
-    import random
+    # --------------------------------------------------------
+    # If class=Random → choose using ACKS class table
+    # --------------------------------------------------------
+    if final_class == "Random":
+        final_class = roll_class_from_ACKS()
 
     # -----------------------
     # GENEROWANIE POSTACI
@@ -34,11 +89,12 @@ def run_generator(final_class, level):
         results.append(sum(random.randint(1, 6) for _ in range(3)))  # 3d6
         results.append(sum(random.randint(1, 6) for _ in range(3)))  # 3d6
 
-        stats_order = ["STR", "DEX", "CON", "INT", "WIS", "CHA"]
+        stats_order = ["STR", "DEX", "CON", "INT", "WIL", "CHA"]
         random.shuffle(results)
         return dict(zip(stats_order, results))
 
     stats = generate_attributes()
+
 
     # MAKSYMALNE POZIOMY KLAS
     class_max_level = {
@@ -78,19 +134,6 @@ def run_generator(final_class, level):
         "Elven Nightblade", "Elven Spellsword",
         "Nobiran Wonderworker", "Zaharan Ruinguard"
     }
-
-
-    # -----------------------
-    # 1. GENEROWANIE ATRYBUTÓW
-    # -----------------------
-
-
-
-
-
-
-
-
 
     # TYTUŁY KLASOWE
 
@@ -457,22 +500,22 @@ def run_generator(final_class, level):
         "Explorer": ["CON"],
         "Thief": ["DEX"],
         "Mage": ["INT"],
-        "Crusader": ["WIS"],
+        "Crusader": ["WIL"],
         "Venturer": ["CHA"],
         "Assassin": ["STR", "DEX"],
         "Barbarian": ["STR", "CON"],
         "Bard": ["DEX", "CHA"],
-        "Bladedancer": ["WIS", "DEX"],
+        "Bladedancer": ["WIL", "DEX"],
         "Paladin": ["STR", "CHA"],
-        "Priestess": ["WIS", "CHA"],
-        "Shaman": ["WIS", "CON"],
-        "Warlock": ["INT", "WIS"],
-        "Witch": ["INT", "WIS"],
-        "Dwarven Craftpriest": ["WIS"],
+        "Priestess": ["WIL", "CHA"],
+        "Shaman": ["WIL", "CON"],
+        "Warlock": ["INT", "WIL"],
+        "Witch": ["INT", "WIL"],
+        "Dwarven Craftpriest": ["WIL"],
         "Dwarven Vaultguard": ["STR"],
         "Elven Nightblade": ["DEX", "INT"],
         "Elven Spellsword": ["STR", "INT"],
-        "Nobiran Wonderworker": ["INT", "WIS"],
+        "Nobiran Wonderworker": ["INT", "WIL"],
         "Zaharan Ruinguard": ["STR", "INT"],
     }
 
@@ -487,8 +530,12 @@ def run_generator(final_class, level):
         if pc_class in ("Dwarven Craftpriest", "Dwarven Vaultguard"):
             return stats["CON"] >= 9
         if pc_class == "Zaharan Ruinguard":
-            return stats["INT"] >= 9 and stats["WIS"] >= 9 and stats["CHA"] >= 9
+            return stats["INT"] >= 9 and stats["WIL"] >= 9 and stats["CHA"] >= 9
         return True
+
+    # Reroll stats until the character is eligible for the chosen class
+    while not (meets_prime_requisites(final_class, stats) and extra_requirements(final_class, stats)):
+        stats = generate_attributes()
 
 
     # -----------------------
@@ -769,27 +816,44 @@ def run_generator(final_class, level):
         features.append(extra_avg)
 
 
-    # CLASS TEMPLATE / STARTOWE GP
 
-    def roll_3d6():
-        return sum(random.randint(1, 6) for _ in range(3))
-
-
-    template_roll = roll_3d6()
-    class_template_value = template_roll
-    gold_pieces_value = template_roll * 10
 
 
     # ALIGNMENT
-    def roll_alignment():
-        roll = random.randint(1, 6)
 
-        if 1 <= roll <= 2:
+    def roll_alignment(final_class):
+        """Losuje alignment biorąc pod uwagę ograniczenia klasowe."""
+
+        # 1) Najpierw normalny rzut:
+        roll = random.randint(1, 6)
+        if roll <= 2:
+            alignment = "Lawful"
+        elif roll <= 5:
+            alignment = "Neutral"
+        else:
+            alignment = "Chaotic"
+
+        # 2) Ograniczenia klasowe:
+
+        # Paladin → zawsze Lawful
+        if final_class == "Paladin":
             return "Lawful"
-        elif 3 <= roll <= 5:
-            return "Neutral"
-        else:  # roll == 6
-            return "Chaotic"
+
+        # Crusader / Bladedancer / Priestess:
+        # tylko Lawful lub Chaotic (Neutral odpada)
+        if final_class in ("Crusader", "Bladedancer", "Priestess"):
+            if alignment == "Neutral":
+                return random.choice(["Lawful", "Chaotic"])
+            return alignment
+
+        # Warlock → nie może być Lawful
+        if final_class == "Warlock":
+            if alignment == "Lawful":
+                return random.choice(["Neutral", "Chaotic"])
+            return alignment
+
+        # 3) Pozostałe klasy → bez zmian
+        return alignment
 
 
     # GENERAL PROFICIENCIES
@@ -1844,7 +1908,7 @@ def run_generator(final_class, level):
 
     # LOSOWANIE ALIGNMENT
 
-    alignment = roll_alignment()
+    alignment = roll_alignment(final_class)
 
     # HP
 
@@ -3123,7 +3187,7 @@ def run_generator(final_class, level):
     elif final_class in ("Dwarven Craftpriest", "Dwarven Vaultguard"):
         p("CON must be at least 9")
     elif final_class == "Zaharan Ruinguard":
-        p("INT, WIS, CHA must be at least 9")
+        p("INT, WIL, CHA must be at least 9")
     else:
         p("None")
 
@@ -3158,10 +3222,20 @@ def run_generator(final_class, level):
     for f in features:
         p(f" - {f}")
 
-    p("\n--- CLASS TEMPLATE OR STARTING GOLD PIECES ---")
-    p(f"\nClass Template roll (3d6): {class_template_value}")
-    p(f"Gold Pieces option (3d6 * 10): {gold_pieces_value} gp")
-    p("Player chooses one of the above options.")
+    # CLASS TEMPLATE / STARTOWE GP
+
+    def roll_3d6():
+        return sum(random.randint(1, 6) for _ in range(3))
+
+    if level == 1:
+        template_roll = roll_3d6()
+        class_template_value = template_roll
+        gold_pieces_value = template_roll * 10
+
+        p("\n--- CLASS TEMPLATE OR STARTING GOLD PIECES ---")
+        p(f"\nClass Template roll (3d6): {class_template_value}")
+        p(f"Gold Pieces option (3d6 * 10): {gold_pieces_value} gp")
+        p("Player chooses one of the above options.")
 
     p("\n--- LEVEL 1 PROFICIENCIES ---")
 
@@ -3227,19 +3301,44 @@ def run_generator(final_class, level):
         if current_level is not None:
             p(f"Level {current_level}: " + ", ".join(current_powers))
 
-    p("\n--- SPELL REPERTOIRE (Known Spells) ---")
-
     known = calculate_known_spells(final_class, level, stats["INT"], spell_slots_progression)
 
-    p("\n--- ARCANE REPERTOIRE ---")
-    if not known_spells:
-        p("This class does not use an arcane repertoire.")
-    else:
-        for lvl in sorted(known_spells.keys()):
-            p(f"Level {lvl} spells ({len(known_spells[lvl])} known):")
-            for s in known_spells[lvl]:
-                p(f"  • {s}")
+    # -----------------------------
+    # SPELL REPERTOIRE (conditional)
+    # -----------------------------
 
+    # Klasy mające repertuar arkany
+    ARCANE_CLASSES = {
+        "Mage", "Warlock",
+        "Elven Nightblade", "Elven Spellsword",
+        "Nobiran Wonderworker", "Zaharan Ruinguard"
+    }
+
+    # Klasy mające wiedzę w formie divine spell lists
+    DIVINE_LIST_CLASSES = {
+        "Shaman", "Priestess", "Crusader", "Bladedancer"
+    }
+
+    # Witch ma specjalny divine repertoire
+    WITCH_CLASS = "Witch"
+
+    # --- ARCANE REPERTOIRE ---
+    if final_class in ARCANE_CLASSES:
+        p("\n--- ARCANE REPERTOIRE (Known Spells) ---")
+
+        known_spells = calculate_known_spells(
+            final_class, level, stats["INT"], spell_slots_progression
+        )
+
+        if not known_spells:
+            p("No arcane spells available at this level.")
+        else:
+            for lvl in sorted(known_spells.keys()):
+                p(f"Level {lvl} spells ({len(known_spells[lvl])} known):")
+                for s in known_spells[lvl]:
+                    p(f"  • {s}")
+
+    # --- SHAMAN ---
     if final_class == "Shaman":
         shaman_spells = calculate_shaman_spells(level, spell_slots_progression)
         p("\n--- SHAMAN DIVINE SPELLS KNOWN ---")
@@ -3248,6 +3347,7 @@ def run_generator(final_class, level):
             for s in shaman_spells[lvl]:
                 p(f"  • {s}")
 
+    # --- PRIESTESS ---
     if final_class == "Priestess":
         priestess_spells = calculate_priestess_spells(level, spell_slots_progression)
         p("\n--- PRIESTESS DIVINE SPELLS KNOWN ---")
@@ -3256,6 +3356,7 @@ def run_generator(final_class, level):
             for s in priestess_spells[lvl]:
                 p(f"  • {s}")
 
+    # --- CRUSADER ---
     if final_class == "Crusader":
         crusader_spells = calculate_crusader_spells(level, spell_slots_progression)
         p("\n--- CRUSADER DIVINE SPELLS KNOWN ---")
@@ -3264,6 +3365,7 @@ def run_generator(final_class, level):
             for s in crusader_spells[lvl]:
                 p(f"  • {s}")
 
+    # --- BLADEDANCER ---
     if final_class == "Bladedancer":
         spells_known = calculate_bladedancer_spells(level, spell_slots_progression)
         p("\n--- BLADEDANCER DIVINE SPELLS KNOWN ---")
@@ -3272,8 +3374,11 @@ def run_generator(final_class, level):
             for s in spells_known[lvl]:
                 p(f"  • {s}")
 
+    # --- WITCH (special divine repertoire) ---
     if final_class == "Witch":
-        repertoire = calculate_witch_repertoire(level, stats["INT"], spell_slots_progression, witch_divine_spells)
+        repertoire = calculate_witch_repertoire(
+            level, stats["INT"], spell_slots_progression, witch_divine_spells
+        )
         p("\n--- WITCH REPERTOIRE (Divine) ---")
         for lvl in sorted(repertoire):
             p(f"Level {lvl} spells ({len(repertoire[lvl])} known):")
