@@ -60,4 +60,7 @@ elif mode == "Treasure Tome Magic Items":
             "sword_and_sorcery"
         ]
     )
-
+    if st.button("Generate magic item"):
+        item = generate_item(mode_choice, style, rarity)
+        st.subheader("Result:")
+        st.json(item)
