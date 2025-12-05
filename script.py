@@ -59,6 +59,66 @@ def roll_class_from_ACKS():
         if cls != "Special":
             return cls
 
+# WITCH TRADITIONS
+
+witch_traditions = {
+    "Antiquarian Witch": {
+        1: "Traditional Medicine",
+        2: "Healing Arts",
+        3: "Second Sight",
+        4: "Magic Mirror",
+    },
+    "Chtonic Witch": {
+        1: "Bedazzling Glamour",
+        2: "Decadent Arts",
+        3: "Subtle Beguilement",
+        4: "Evil Eye",
+    },
+    "Sylvan Witch": {
+        1: "Friends of Birds and Beasts",
+        2: "Natural Arts",
+        3: "Close Friend of Birds and Beasts",
+        4: "Enchanted Forest",
+    },
+}
+
+def choose_witch_tradition():
+    return random.choice(list(witch_traditions.keys()))
+
+# ================================
+# WARLOCK DARK PATHS (SUBCLASSES)
+
+warlock_paths = {
+        "Demonologist": {
+            1: "Conjure Dark Powers",
+            2: "Theology",
+            3: "Conjure Hellion",
+            4: "Expanded Repertoire",
+            5: "Words of Command and Obedience",
+            6: "Power of Sacrifice"
+        },
+        "Necromancer": {
+            1: "Secrets of the Dark Arts",
+            2: "Mortuary Science",
+            3: "Speak with Dead",
+            4: "Expanded Repertoire",
+            5: "Lordship Over the Undead",
+            6: "Secrets of Life and Death"
+        },
+        "Transmogrification": {
+            1: "Grotesque Arts of Transformation",
+            2: "Alchemy",
+            3: "Skinchange",
+            4: "Expanded Repertoire",
+            5: "Hideous Servant",
+            6: "Shape Flesh and Bone"
+        },
+    }
+
+def choose_warlock_path():
+    """Losuje ścieżkę Warlocka."""
+    return random.choice(list(warlock_paths.keys()))
+
 def run_generator(final_class, level):
     import io
     out = io.StringIO()
@@ -71,6 +131,14 @@ def run_generator(final_class, level):
     # --------------------------------------------------------
     if final_class == "Random":
         final_class = roll_class_from_ACKS()
+
+    warlock_path = None
+    if final_class == "Warlock":
+        warlock_path = choose_warlock_path()
+
+    witch_tradition = None
+    if final_class == "Witch":
+        witch_tradition = choose_witch_tradition()
 
     # -----------------------
     # GENEROWANIE POSTACI
@@ -2262,32 +2330,32 @@ def run_generator(final_class, level):
         "Warlock": {
             1: [
                 "Arcane Magic",
-                "Corrupting Weakness I",
-                "Dark Path",
+                "Corrupting Weakness 1",
+                "Dark Path 1",
                 "Occultism"
             ],
             3: [
-                "Corrupting Weakness II",
-                "Dark Path II"
+                "Corrupting Weakness 2",
+                "Dark Path 2"
             ],
             5: [
-                "Corrupting Weakness III",
-                "Dark Path III",
+                "Corrupting Weakness 3",
+                "Dark Path 3",
                 "Minor Magical Research"
             ],
             7: [
-                "Corrupting Weakness IV",
-                "Dark Path IV"
+                "Corrupting Weakness 4",
+                "Dark Path 4"
             ],
             9: [
-                "Corrupting Weakness V",
-                "Dark Path V",
+                "Corrupting Weakness 5",
+                "Dark Path 5",
                 "Major Magical Research",
                 "Sanctum"
             ],
             11: [
-                "Corrupting Weakness VI",
-                "Dark Path VI",
+                "Corrupting Weakness 6",
+                "Dark Path 6",
                 "Supreme Magical Research"
             ],
         },
@@ -2297,10 +2365,20 @@ def run_generator(final_class, level):
                 "Studious Divine Magic",
                 "Tradition",
                 "Village Wisdom",
+                "Tradition Feature 1"
             ],
-            3: ["Brew Potions"],
-            5: ["Minor Magical Research"],
-            7: ["Scribe Scrolls"],
+            3: [
+                "Brew Potions",
+                "Tradition Feature 2"
+            ],
+            5: [
+                "Minor Magical Research",
+                "Tradition Feature 3"
+            ],
+            7: [
+                "Scribe Scrolls",
+                "Tradition Feature 4"
+            ],
             9: [
                 "Witch's Cottage",
                 "Major Magical Research"
@@ -2418,7 +2496,7 @@ def run_generator(final_class, level):
     }
 
 
-    def apply_class_powers(final_class, level):
+    def apply_class_powers(final_class, level, warlock_path=warlock_path, witch_tradition=witch_tradition):
         """
         Zwraca:
           powers — lista wszystkich posiadanych class powers
@@ -2437,13 +2515,44 @@ def run_generator(final_class, level):
                 continue
 
             for power in prog[power_level]:
+
+                # ---- SPECJALNA OBSŁUGA WARLOCKA ----
+                if final_class == "Warlock" and "Dark Path" in power:
+                    # Wyciągnij numer (np. "Dark Path III" → 3)
+                    index = power.replace("Dark Path", "").strip()
+                    index = 1 if index == "" else int(index)
+
+                    subclass_power_warlock = warlock_paths[warlock_path][index]
+
+                    powers.append(subclass_power_warlock)
+                    log.append((power_level, "Class Power", subclass_power_warlock))
+                    continue
+
+                # ---- SPECJALNA OBSŁUGA WARLOCKA ----
+                if final_class == "Witch" and "Tradition Feature" in power:
+                    # Wyciągnij numer (np. "Dark Path III" → 3)
+                    index = power.replace("Tradition Feature", "").strip()
+                    index = 1 if index == "" else int(index)
+
+                    subclass_power_witch = witch_traditions[witch_tradition][index]
+
+                    powers.append(subclass_power_witch)
+                    log.append((power_level, "Class Power", subclass_power_witch))
+                    continue
+
+                # Normalna ścieżka dla innych mocy
                 powers.append(power)
                 log.append((power_level, "Class Power", power))
 
         return powers, log
 
 
-    class_powers, class_powers_log = apply_class_powers(final_class, level)
+    class_powers, class_powers_log = apply_class_powers(
+        final_class,
+        level,
+        warlock_path=warlock_path,
+        witch_tradition=witch_tradition
+    )
 
     # ZAKLĘCIA
 
@@ -3171,12 +3280,20 @@ def run_generator(final_class, level):
         return repertoire
 
 
+
+
     # GENEROWANIE REZULTATU
     p("--- CLASS AND LEVEL---")
     p(f"Class: {final_class}")
     p(f"Class Title: {class_title}")
     p(f"Level: {level}")
     p("Alignment:", alignment)
+
+    if final_class == "Warlock":
+        p(f"Dark Path: {warlock_path} ---")
+
+    if final_class == "Witch":
+        p(f"Witch Tradition: {witch_tradition}")
 
     p("\n--- PRIME REQUISITES ---")
     p(prime_requisites[final_class])
@@ -3222,21 +3339,6 @@ def run_generator(final_class, level):
     for f in features:
         p(f" - {f}")
 
-    # CLASS TEMPLATE / STARTOWE GP
-
-    def roll_3d6():
-        return sum(random.randint(1, 6) for _ in range(3))
-
-    if level == 1:
-        template_roll = roll_3d6()
-        class_template_value = template_roll
-        gold_pieces_value = template_roll * 10
-
-        p("\n--- CLASS TEMPLATE OR STARTING GOLD PIECES ---")
-        p(f"\nClass Template roll (3d6): {class_template_value}")
-        p(f"Gold Pieces option (3d6 * 10): {gold_pieces_value} gp")
-        p("Player chooses one of the above options.")
-
     p("\n--- LEVEL 1 PROFICIENCIES ---")
 
     p("\nClass Proficiency:")
@@ -3255,30 +3357,31 @@ def run_generator(final_class, level):
         for prof in level1_auto:
             p(f" - {prof}")
 
-    p("\n--- PROFICIENCIES BY LEVEL ---")
+    if level > 1:
+        p("\n--- PROFICIENCIES BY LEVEL ---")
 
-    # auto_after_lvl1 zdefiniowaliśmy wyżej przy LEVEL 1
-    combined_log = level_gains_log[:]  # kopia
-    for lvl, ptype, prof in auto_after_lvl1:
-        combined_log.append((lvl, "general_auto", prof))
+        # auto_after_lvl1 zdefiniowaliśmy wyżej przy LEVEL 1
+        combined_log = level_gains_log[:]  # kopia
+        for lvl, ptype, prof in auto_after_lvl1:
+            combined_log.append((lvl, "general_auto", prof))
 
-    combined_log.sort(key=lambda x: x[0])
+        combined_log.sort(key=lambda x: x[0])
 
-    if not combined_log:
-        p("No additional proficiencies gained after level 1.")
-    else:
-        current_level = None
-        for lvl, ptype, prof in combined_log:
-            if lvl != current_level:
-                p(f"\nLevel {lvl}:")
-                current_level = lvl
+        if not combined_log:
+            p("No additional proficiencies gained after level 1.")
+        else:
+            current_level = None
+            for lvl, ptype, prof in combined_log:
+                if lvl != current_level:
+                    p(f"\nLevel {lvl}:")
+                    current_level = lvl
 
-            if ptype == "class":
-                p(f"  [Class]         {prof}")
-            elif ptype == "general":
-                p(f"  [General]       {prof}")
-            else:  # general_auto
-                p(f"  [General - Auto] {prof}")
+                if ptype == "class":
+                    p(f"  [Class]         {prof}")
+                elif ptype == "general":
+                    p(f"  [General]       {prof}")
+                else:  # general_auto
+                    p(f"  [General - Auto] {prof}")
 
     p("\n--- CLASS POWERS ---")
 
@@ -3384,5 +3487,20 @@ def run_generator(final_class, level):
             p(f"Level {lvl} spells ({len(repertoire[lvl])} known):")
             for s in repertoire[lvl]:
                 p(f"  • {s}")
+
+    # CLASS TEMPLATE / STARTOWE GP
+
+    def roll_3d6():
+        return sum(random.randint(1, 6) for _ in range(3))
+
+    if level == 1:
+        template_roll = roll_3d6()
+        class_template_value = template_roll
+        gold_pieces_value = template_roll * 10
+
+        p("\n--- CLASS TEMPLATE OR STARTING GOLD PIECES ---")
+        p(f"\nClass Template roll (3d6): {class_template_value}")
+        p(f"Gold Pieces option (3d6 * 10): {gold_pieces_value} gp")
+        p("Player chooses one of the above options.")
 
     return out.getvalue()
