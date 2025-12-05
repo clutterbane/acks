@@ -72,6 +72,29 @@ corrupting_weaknesses = {
     "Sleepless": {"limit": 5},
 }
 
+mutations_table = {
+    1: "Size Shift: Shrink to half size or grow to giant size; DEX becomes 3 and recovers by 1 per week.",
+    2: "Animalistic Traits: Gain attributes of an appropriate animal; +2 to three attributes, -2 to three others.",
+    3: "Thick Hide: +2 AC, but -1 DEX and -1 CHA.",
+    4: "Delicate Beauty: +4 CHA (max 18) but -4 STR (min 3).",
+    5: "Third Eye: Gain telepathy 3/day; -3 to reaction rolls from normal humans.",
+    6: "Deathly Pallor: -4 reaction with living creatures, undead treat you as one of them.",
+    7: "Claws: Gain claw attack (1d4), but -1 to fine manipulation throws.",
+    8: "Fanged Maw: Gain bite (1d6), but cannot speak normally (can still cast spells).",
+    9: "Tentacle Arm: Tentacle attack (1d8), -3 CHA, -4 to fine manipulation, cannot use bows or two-handed weapons.",
+    10: "Monstrous Transformation: Become a sapient monster fitting your alignment & temperament.",
+    11: "Oppositional Monstrous Transformation: Become a monster opposite your alignment & temperament.",
+    12: "Daily Amnesia: Each day Save vs Spells or forget your identity for 1d6 days.",
+    13: "Recurring Madness: Suffer random actions like incite madness for 1d6 days; 5% daily recurrence chance.",
+    14: "Bleeding Curse: Below 1/2 HP you bleed 1 HP/round unless healed; bleeding resumes after next injury.",
+    15: "Instant Aging: Age to halfway of max racial age; Save vs Death or die.",
+    16: "Degeneration: Permanently lose 1d3 STR, DEX, CON; speed halved.",
+    17: "Hollow Bones: CON halved; take double bludgeoning/fall damage; weight -30%.",
+    18: "Wasting Disease: Permanently lose 1d3 CHA and CON, then lose 1 CHA and CON daily.",
+    19: "Rotting Flesh: CHA becomes 3; speed halved; no natural healing.",
+    20: "Ochre Ooze: Transform into sentient ochre ooze; cannot cast, speak, or use items; equipment destroyed.",
+}
+
 # WITCH TRADITIONS
 
 witch_traditions = {
@@ -2532,6 +2555,29 @@ def run_generator(final_class, level):
 
         return random.choice(candidates)
 
+    mutation_log = []  # lista krotek: (index, roll, description)
+
+    def roll_mutation(mutated_count):
+        """
+        Zwraca wynik z tabeli mutacji.
+        mutated_count = ile razy już wylosowano 'Mutated'
+
+        Pierwsza mutacja → 1d10
+        Druga → 1d10+1
+        Trzecia → 1d10+2
+        ...
+
+        Maksimum to 1d20.
+        """
+        base_roll = random.randint(1, 10)
+        modified = base_roll + mutated_count  # przesunięcie
+
+        if modified > 20:
+            modified = 20  # sufit tabeli
+
+        return modified, mutations_table[modified]
+
+
     def apply_class_powers(final_class, level, warlock_path=warlock_path, witch_tradition=witch_tradition):
         """
         Zwraca:
@@ -2553,17 +2599,43 @@ def run_generator(final_class, level):
             for power in prog[power_level]:
 
                 # --- WARLOCK: CORRUPTING WEAKNESS ---
+                # licznik mutacji
+                if "mutated_counter" not in locals():
+                    mutated_counter = 0
+
+                # --- WARLOCK: CORRUPTING WEAKNESS ---
                 if final_class == "Warlock" and "Corrupting Weakness" in power:
-                    # utrzymujemy licznik posiadanych Weaknesses
+
                     if "weakness_count" not in locals():
                         weakness_count = {}
 
-                    w = roll_corrupting_weakness(weakness_count)
+                    weakness = roll_corrupting_weakness(weakness_count)
 
-                    if w:
-                        weakness_count[w] = weakness_count.get(w, 0) + 1
-                        powers.append(w)
-                        log.append((power_level, "Class Power", w))
+                    if weakness:
+                        weakness_count[weakness] = weakness_count.get(weakness, 0) + 1
+
+                        # Specjalny przypadek: Mutated
+                        if weakness == "Mutated":
+                            mutated_counter += 1
+
+                            roll, mutation_effect = roll_mutation(mutated_counter)
+
+                            # Dodajemy wpis tylko „Mutated” do Class Powers:
+                            powers.append("Mutated")
+                            log.append((power_level, "Class Power", "Mutated"))
+
+                            # Pełny opis dodajemy do mutation_log:
+                            mutation_log.append({
+                                "index": mutated_counter,
+                                "roll": roll,
+                                "effect": mutation_effect
+                            })
+
+                            continue
+
+                        # reszta słabości
+                        powers.append(weakness)
+                        log.append((power_level, "Class Power", weakness))
 
                     continue
 
@@ -3454,6 +3526,15 @@ def run_generator(final_class, level):
         # flush ostatniego poziomu
         if current_level is not None:
             p(f"Level {current_level}: " + ", ".join(current_powers))
+
+    # --- MUTATION DEEP DIVE ---
+    if final_class == "Warlock" and mutation_log:
+        p("\n--- WARLOCK MUTATIONS (Deep Dive) ---")
+        for entry in mutation_log:
+            idx = entry["index"]
+            roll = entry["roll"]
+            effect = entry["effect"]
+            p(f"Mutation #{idx} (Roll {roll}): {effect}")
 
     known = calculate_known_spells(final_class, level, stats["INT"], spell_slots_progression)
 
