@@ -50,10 +50,14 @@ elif mode == "Treasure Tome Magic Items":
 
     style = st.selectbox(
         "Campaign style:",
-        ["ancient_myth", "classic_fantasy"]
+        [
+            "ancient_myth",
+            "classical_epic",
+            "northern_saga",
+            "chivalric_romance",
+            "arabian_adventure",
+            "high_fantasy",
+            "sword_and_sorcery"
+        ]
     )
 
-    if st.button("🎲 Generate magic item"):
-        item = generate_item(mode_choice, style, rarity)
-        st.subheader("Result:")
-        st.json(item)
