@@ -8,10 +8,10 @@ st.title("ACKS NPC Generator")
 class_list = sorted(ALL_CLASSES)
 
 final_class = st.selectbox("Choose class", ["Random"] + sorted(ALL_CLASSES))
-level = st.number_input("Wybierz poziom:", min_value=1, max_value=14, value=1)
+level = st.number_input("Choose level:", min_value=1, max_value=14, value=1)
 
-if st.button("Generuj NPC"):
-    st.write("🔍 Wywołuję run_generator...")
+if st.button("Generate NPC"):
+    st.write("🔍 Executing run_generator...")
     result = run_generator(final_class, level)
-    st.write("✔ run_generator działa")
-    st.text_area("Wynik:", result, height=800)
+    st.write("✔ run_generator works")
+    st.text_area("Result:", result, height=800)
