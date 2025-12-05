@@ -1,25 +1,5 @@
 import random
 
-# -----------------------------------------------------------
-# DEFINICJA TRYBÓW GENEROWANIA
-# -----------------------------------------------------------
-
-MAGIC_ITEM_MODES = {"Classic", "Heroic", "Gritty"}
-
-def normalize_mode(mode: str) -> str:
-    """
-    Zwraca poprawny tryb losowania lub rzuca wyjątek.
-    Heroic == Gritty pod względem logiki magic items.
-    """
-    mode = mode.capitalize()
-    if mode not in MAGIC_ITEM_MODES:
-        raise ValueError(f"Invalid magic item mode: {mode}")
-    return mode
-
-# ============================================================
-# SUBTABLE DEFINITIONS — COMMON POTIONS 1
-# ============================================================
-
 COMMON_POTIONS_1 = [
     (1, 6,  {"name": "Healing Salve", "cues": "smell of camphor and wormwood"}),
     (7, 14, {"name": "Midnight Oil", "cues": "dark oil, opaque with no gloss"}),
@@ -36,19 +16,6 @@ COMMON_POTIONS_1 = [
     (90, 90, {"name": "Potion of Antivenom", "cues": "opaque violet, taste and smell of meat cooking"}),
     (91, 100, {"name": "Potion of Arcane Armor", "cues": "shimmering blue tint, savory"}),
 ]
-
-def roll_from_common_potions_1():
-    roll = random.randint(1, 100)
-    for lo, hi, data in COMMON_POTIONS_1:
-        if lo <= roll <= hi:
-            return {
-                "type": "Potion",
-                "subtable": "Common Potions 1",
-                "name": data["name"],
-                "cues": data["cues"],
-                "roll": roll
-            }
-    return None
 
 COMMON_POTIONS_2 = [
     (1, 1,  {"name": "Potion of Bottomless Appetite", "cues": "smells like a hearty meal"}),
@@ -72,19 +39,6 @@ COMMON_POTIONS_2 = [
     (97, 97, {"name": "Potion of Guilelessness", "cues": "pale blue"}),
     (98, 100, {"name": "Potion of Hallucination", "cues": "(imitates potion it copies)"}),
 ]
-
-def roll_from_common_potions_2():
-    roll = random.randint(1, 100)
-    for lo, hi, data in COMMON_POTIONS_2:
-        if lo <= roll <= hi:
-            return {
-                "type": "Potion",
-                "subtable": "Common Potions 2",
-                "name": data["name"],
-                "cues": data["cues"],
-                "roll": roll
-            }
-    return None
 
 COMMON_POTIONS_3 = [
     (1, 13,  {"name": "Potion of Hallucination", "cues": "(imitates potion copied)"}),
@@ -116,19 +70,6 @@ COMMON_POTIONS_3 = [
     (99, 99, {"name": "Potion of Troublesome Tormina", "cues": "strong liquor"}),
     (100, 100, {"name": "Potion of Vermin Domination", "cues": "dark green"}),
 ]
-
-def roll_from_common_potions_3():
-    roll = random.randint(1, 100)
-    for lo, hi, data in COMMON_POTIONS_3:
-        if lo <= roll <= hi:
-            return {
-                "type": "Potion",
-                "subtable": "Common Potions 3",
-                "name": data["name"],
-                "cues": data["cues"],
-                "roll": roll
-            }
-    return None
 
 UNCOMMON_POTIONS_1 = [
     (1, 1,   {"name": "Bottle of Air", "cues": "white tinted, bubbly"}),
@@ -170,19 +111,6 @@ UNCOMMON_POTIONS_1 = [
     (96, 99, {"name": "Potion of Deflect Ordinary Weapons", "cues": "brown tint, taste of blood"}),
     (100, 100, {"name": "Potion of Depetrification", "cues": "grey, earthy smell"}),
 ]
-
-def roll_from_uncommon_potions_1():
-    roll = random.randint(1, 100)
-    for lo, hi, data in UNCOMMON_POTIONS_1:
-        if lo <= roll <= hi:
-            return {
-                "type": "Potion",
-                "subtable": "Uncommon Potions 1",
-                "name": data["name"],
-                "cues": data["cues"],
-                "roll": roll
-            }
-    return None
 
 UNCOMMON_POTIONS_2 = [
     (1, 2,   {"name": "Potion of Depetrification", "cues": "grey, earthy smell"}),
@@ -226,19 +154,6 @@ UNCOMMON_POTIONS_2 = [
     (100,100,{"name": "Potion of Physical Invulnerability", "cues": "dark red, taste of spiced rum"}),
 ]
 
-def roll_from_uncommon_potions_2():
-    roll = random.randint(1, 100)
-    for lo, hi, data in UNCOMMON_POTIONS_2:
-        if lo <= roll <= hi:
-            return {
-                "type": "Potion",
-                "subtable": "Uncommon Potions 2",
-                "name": data["name"],
-                "cues": data["cues"],
-                "roll": roll
-            }
-    return None
-
 UNCOMMON_POTIONS_3 = [
     (1, 5,   {"name": "Potion of Physical Invulnerability", "cues": "dark red, taste of spiced rum"}),
     (6, 10,  {"name": "Potion of Poison", "cues": "slight green tint, subtle sour taste"}),
@@ -279,19 +194,6 @@ UNCOMMON_POTIONS_3 = [
     (100,100,{"name": "Witch’s Ointment", "cues": "grey ointment, smell of spring air"}),
 ]
 
-def roll_from_uncommon_potions_3():
-    roll = random.randint(1, 100)
-    for lo, hi, data in UNCOMMON_POTIONS_3:
-        if lo <= roll <= hi:
-            return {
-                "type": "Potion",
-                "subtable": "Uncommon Potions 3",
-                "name": data["name"],
-                "cues": data["cues"],
-                "roll": roll
-            }
-    return None
-
 VERY_RARE_POTIONS = [
     (1, 25, {
         "name": "Oil of Permanency",
@@ -310,19 +212,6 @@ VERY_RARE_POTIONS = [
         "cues": "smells of flowers and early spring"
     }),
 ]
-
-def roll_from_very_rare_potions():
-    roll = random.randint(1, 100)
-    for lo, hi, data in VERY_RARE_POTIONS:
-        if lo <= roll <= hi:
-            return {
-                "type": "Potion",
-                "subtable": "Very Rare Potions",
-                "name": data["name"],
-                "cues": data["cues"],
-                "roll": roll
-            }
-    return None
 
 UNCOMMON_RINGS = [
     (1, 7,  "Bezoar Ring"),
@@ -344,18 +233,6 @@ UNCOMMON_RINGS = [
     (88, 91, "Ring of the Sewer Spider^"),
     (92, 100, "Ring of Vitality"),
 ]
-
-def roll_uncommon_ring():
-    roll = random.randint(1, 100)
-    for lo, hi, name in UNCOMMON_RINGS:
-        if lo <= roll <= hi:
-            return {
-                "type": "Ring",
-                "rarity": "Uncommon",
-                "name": name,
-                "roll": roll
-            }
-    return None
 
 RARE_RINGS_1 = [
     (1, 12, "Band of Beguilement"),
@@ -379,18 +256,6 @@ RARE_RINGS_1 = [
     (77, 79, "Ring of Penumbral Perception"),
     (79, 100, "Ring of Protection +1"),
 ]
-
-def roll_rare_ring_1():
-    roll = random.randint(1, 100)
-    for lo, hi, name in RARE_RINGS_1:
-        if lo <= roll <= hi:
-            return {
-                "type": "Ring",
-                "rarity": "Rare (Table 1)",
-                "name": name,
-                "roll": roll
-            }
-    return None
 
 RARE_RINGS_2 = [
     (1, 6, "Ring of Protection +1"),
@@ -416,18 +281,6 @@ RARE_RINGS_2 = [
     (98, 99, "Ring of Vengeful Spirits"),
     (100, 100, "Ring of Wailing"),
 ]
-
-def roll_rare_ring_2():
-    roll = random.randint(1, 100)
-    for lo, hi, name in RARE_RINGS_2:
-        if lo <= roll <= hi:
-            return {
-                "type": "Ring",
-                "rarity": "Rare (Table 2)",
-                "name": name,
-                "roll": roll
-            }
-    return None
 
 VERY_RARE_RINGS = [
     (1, 3, "Ring of Absence"),
@@ -486,21 +339,6 @@ VERY_RARE_RINGS = [
     (95, 100, "Ring of X-Ray Vision"),
 ]
 
-
-
-
-def roll_very_rare_ring():
-    roll = random.randint(1, 100)
-    for lo, hi, name in VERY_RARE_RINGS:
-        if lo <= roll <= hi:
-            return {
-                "type": "Ring",
-                "rarity": "Very Rare",
-                "name": name,
-                "roll": roll
-            }
-    return None
-
 LEGENDARY_RINGS = [
     (1, 8, "Ring of Arcane Alignment"),
     (9, 18, "Ring of Regeneration"),
@@ -515,37 +353,12 @@ LEGENDARY_RINGS = [
     (92, 100, "Seal of Chaos"),
 ]
 
-def roll_legendary_ring():
-    roll = random.randint(1, 100)
-    for lo, hi, name in LEGENDARY_RINGS:
-        if lo <= roll <= hi:
-            return {
-                "type": "Ring",
-                "rarity": "Legendary",
-                "name": name,
-                "roll": roll
-            }
-    return None
-
 COMMON_SCROLLS = [
     (1, 16, "Creature Warding"),
     (17, 82, "Spell Scroll (1 level)"),
     (83, 92, "Spell Scroll (2 levels)"),
     (93, 100, "Treasure Map (Treasure Type B)"),
 ]
-
-def roll_common_scroll():
-    roll = random.randint(1, 100)
-    for lo, hi, result in COMMON_SCROLLS:
-        if lo <= roll <= hi:
-            return {
-                "type": "Scroll",
-                "rarity": "Common",
-                "result": result,
-                "roll": roll
-            }
-    return None
-
 
 UNCOMMON_SCROLLS = [
     (1, 8, "Cursed Scroll^"),
@@ -564,19 +377,6 @@ UNCOMMON_SCROLLS = [
     (88, 100, "Treasure Map (Treasure Type D)"),
 ]
 
-def roll_uncommon_scroll():
-    roll = random.randint(1, 100)
-    for lo, hi, result in UNCOMMON_SCROLLS:
-        if lo <= roll <= hi:
-            return {
-                "type": "Scroll",
-                "rarity": "Uncommon",
-                "result": result,
-                "roll": roll
-            }
-    return None
-
-
 RARE_SCROLLS = [
     (1, 1, "Scroll of Pledges"),
     (2, 5, "Spell Scroll (12 levels)"),
@@ -591,18 +391,6 @@ RARE_SCROLLS = [
     (77, 100, "Treasure Map (Treasure Type Q)"),
 ]
 
-def roll_rare_scroll():
-    roll = random.randint(1, 100)
-    for lo, hi, result in RARE_SCROLLS:
-        if lo <= roll <= hi:
-            return {
-                "type": "Scroll",
-                "rarity": "Rare",
-                "result": result,
-                "roll": roll
-            }
-    return None
-
 VERY_RARE_SCROLLS = [
     (1, 1, "Scroll of Anyspell, Greater"),
     (2, 44, "Spell Scroll (Ritual, 7th level)"),
@@ -611,18 +399,6 @@ VERY_RARE_SCROLLS = [
     (81, 94, "Treasure Map (Treasure Type R)"),
     (95, 100, "Treasure Map (Treasure Type R,N)"),
 ]
-
-def roll_very_rare_scroll():
-    roll = random.randint(1, 100)
-    for lo, hi, result in VERY_RARE_SCROLLS:
-        if lo <= roll <= hi:
-            return {
-                "type": "Scroll",
-                "rarity": "Very Rare",
-                "result": result,
-                "roll": roll
-            }
-    return None
 
 LEGENDARY_SCROLLS = [
     (1, 21, "Spell Scroll (Ritual, 9th level)"),
@@ -633,170 +409,1573 @@ LEGENDARY_SCROLLS = [
     (92, 100, "Treasure Maps (1d6 maps totalling 8 × Treasure Type R)"),
 ]
 
-def roll_legendary_scroll():
-    roll = random.randint(1, 100)
-    for lo, hi, result in LEGENDARY_SCROLLS:
-        if lo <= roll <= hi:
-            return {
-                "type": "Scroll",
-                "rarity": "Legendary",
-                "result": result,
-                "roll": roll
-            }
-    return None
+RARE_IMPLEMENT_1 = [
+    (1, 1, "Curse Pole"),
+    (2, 3, "Rod of Flashing [A]"),
+    (4, 5, "Staff of Battle Magic [AD]"),
+    (6, 7, "Staff of Brilliance [AD]"),
+    (8, 9, "Staff of Innocence"),
+    (10, 11, "Staff of Line-Drawing [AD]"),
+    (12, 13, "Staff of Smiting [AD]"),
+    (14, 14, "Staff of Springiness"),
+    (15, 16, "Staff of Successive Summoning [AD]"),
+    (17, 18, "Staff of the Healer [D]"),
+    (19, 20, "Staff of the Humble Healer [D]"),
+    (21, 22, "Wand of Aggravated Airway Amphibians"),
+    (23, 24, "Wand of Annulment"),
+    (25, 26, "Wand of Arcane Arrows"),
+    (27, 28, "Wand of Battering"),
+    (29, 29, "Wand of Blinding Fireballs"),
+    (30, 31, "Wand of Channeled Flame"),
+    (32, 33, "Wand of Collision"),
+    (34, 44, "Wand of Counterspelling"),
+    (45, 46, "Wand of Crushing Force"),
+    (47, 54, "Wand of Deafening Thunder"),
+    (55, 61, "Wand of Desiccation"),
+    (62, 63, "Wand of Distant Disappearance"),
+    (64, 65, "Wand of Electrical Emission"),
+    (66, 66, "Wand of Energy Revulnerability"),
+    (67, 68, "Wand of Ephemeral Evaporation"),
+    (69, 78, "Wand of Fanned Flames"),
+    (79, 81, "Wand of Figments"),
+    (82, 87, "Wand of Foe Discernment"),
+    (88, 88, "Wand of Fright"),
+    (89, 90, "Wand of Gales"),
+    (91, 97, "Wand of Gloaming"),
+    (98, 100, "Wand of Illusion"),
+]
+
+RARE_IMPLEMENT_2 = [
+    (1, 7, "Wand of Illusion"),
+    (8, 9, "Wand of Indignation"),
+    (10, 11, "Wand of Infatuation"),
+    (12, 19, "Wand of Infuriation"),
+    (20, 31, "Wand of Light"),
+    (32, 33, "Wand of Luminosity"),
+    (34, 44, "Wand of Mage Missiles"),
+    (45, 53, "Wand of Magic Discernment"),
+    (54, 62, "Wand of Noises"),
+    (63, 63, "Wand of Physical Revulnerability"),
+    (64, 64, "Wand of Recognition"),
+    (65, 65, "Wand of Sleep"),
+    (66, 74, "Wand of Slipperiness"),
+    (75, 83, "Wand of Slumbering"),
+    (84, 92, "Wand of Smokescreens"),
+    (93, 94, "Wand of Spiders"),
+    (95, 95, "Wand of Stolen Voices"),
+    (96, 97, "Wand of Uncanny Gyration"),
+    (98, 98, "Wand of Uncontrollable Mirth"),
+    (99, 100, "Wand of Webs"),
+]
+
+VERY_RARE_IMPLEMENT_1 = [
+    (1, 4, "Hellfire Wand of Zahar"),
+    (5, 6, "Lightning Rod"),
+    (7, 11, "Madness Stick"),
+    (12, 13, "Master Control Rod"),
+    (14, 15, "Rod of Elemental Spheres [A]"),
+    (16, 17, "Rod of Eternal Torture [AD]"),
+    (18, 18, "Rod of Force [A]"),
+    (19, 33, "Rod of Nullification"),
+    (34, 34, "Rod of Rumination [A]"),
+    (35, 35, "Rod of the Night Sky [AD]"),
+    (36, 37, "Rod of Unstoppable Force [AD]"),
+    (38, 42, "Scorched Staff [A]"),
+    (43, 44, "Staff of Borrowed Heartbeats [D]"),
+    (45, 49, "Staff of Calling [D]"),
+    (50, 53, "Staff of Corrosion [A]"),
+    (54, 57, "Staff of Domination [A]"),
+    (58, 58, "Staff of Errant Lightning [A]"),
+    (59, 60, "Staff of Feral Forms [A]"),
+    (61, 61, "Staff of Forbidden Entry [AD]"),
+    (62, 63, "Staff of Forceful Flames [A]"),
+    (64, 65, "Staff of Grandeur [D]"),
+    (66, 69, "Staff of Halting [AD]"),
+    (70, 71, "Staff of Iron Tooth and Hide [D]"),
+    (72, 72, "Staff of Life’s Luster [D]"),
+    (73, 73, "Staff of Life’s Semblance [D]"),
+    (74, 75, "Staff of Looming Destruction [A]"),
+    (76, 77, "Staff of Mentalism [A]"),
+    (78, 79, "Staff of Mirrored Dooms [D]"),
+    (80, 86, "Staff of Misdirection [AD]"),
+    (87, 88, "Staff of Outreached Mercy [D]"),
+    (89, 90, "Staff of Reclamation [D]"),
+    (91, 94, "Staff of Starfall [A]"),
+    (95, 96, "Staff of Steady Smiting [AD]"),
+    (97, 100, "Staff of Stolen Sinew [D]"),
+]
+
+VERY_RARE_IMPLEMENT_2 = [
+    (1, 2, "Staff of Suffering [AD]"),
+    (3, 4, "Staff of the All-Seeing Eye [AD]"),
+    (5, 7, "Staff of the Ashen Tyrant [AD]"),
+    (8, 9, "Staff of the Dreamlands [AD]"),
+    (10, 11, "Staff of the Emerald Wyrm [AD]"),
+    (12, 13, "Staff of the Great Healer [D]"),
+    (14, 15, "Staff of the Hidden Sun [A]"),
+    (16, 17, "Staff of the Phoenix [D]"),
+    (18, 23, "Staff of the Salamander [D]"),
+    (24, 25, "Staff of the Sky's Roar [A]"),
+    (26, 27, "Staff of the Treeherder"),
+    (28, 29, "Staff of the Wandering Goblin [D]"),
+    (30, 35, "Staff of Ward-Runes [AD]"),
+    (36, 37, "Staff of What Lies Beneath [A]"),
+    (38, 39, "Staff of Wilting [D]"),
+    (40, 41, "Unicorn Horn Rod [AD]"),
+    (42, 43, "Wand of Anti-Magic Zone"),
+    (44, 44, "Wand of Bestial Flight"),
+    (45, 46, "Wand of Bestial Rage"),
+    (47, 48, "Wand of Blightfire"),
+    (49, 50, "Wand of Blinding Blasts"),
+    (51, 52, "Wand of Blood Magic"),
+    (53, 54, "Wand of Borrowed Eyes"),
+    (55, 55, "Wand of Canine Confusion"),
+    (56, 56, "Wand of Carmine Blossoms"),
+    (57, 58, "Wand of Changing Perspective"),
+    (59, 60, "Wand of Combustion"),
+    (61, 62, "Wand of Corpse Conscription"),
+    (63, 64, "Wand of Cruelty"),
+    (65, 66, "Wand of Dispelling"),
+    (67, 76, "Wand of Dread"),
+    (77, 78, "Wand of Enervating"),
+    (79, 81, "Wand of Fascination"),
+    (82, 83, "Wand of Fear"),
+    (84, 85, "Wand of Fickle Fireballs"),
+    (86, 87, "Wand of Fiery Arcs"),
+    (88, 93, "Wand of Fireballs"),
+    (94, 97, "Wand of Flying"),
+    (98, 100, "Wand of Foliation"),
+]
+
+VERY_RARE_IMPLEMENT_3 = [
+    (1, 2, "Wand of Frigidity"),
+    (3, 6, "Wand of Frost"),
+    (7, 8, "Wand of Fungal Fecundity"),
+    (9, 13, "Wand of Growth"),
+    (14, 15, "Wand of Guises"),
+    (16, 17, "Wand of Impetus"),
+    (18, 20, "Wand of Incineration"),
+    (21, 26, "Wand of Item Negation"),
+    (27, 28, "Wand of Judicious Incineration"),
+    (29, 30, "Wand of Kinetics"),
+    (31, 32, "Wand of Mage Missile Barrage"),
+    (33, 35, "Wand of Metal Location"),
+    (36, 37, "Wand of Miasma"),
+    (38, 39, "Wand of Mutation"),
+    (40, 41, "Wand of Octadic Disorientation"),
+    (42, 43, "Wand of Paralysis"),
+    (44, 46, "Wand of Passage"),
+    (47, 48, "Wand of Phytogenesis"),
+    (49, 50, "Wand of Ranged Regurgitation"),
+    (51, 52, "Wand of Resizing"),
+    (53, 54, "Wand of Rioting"),
+    (55, 56, "Wand of Scant Succor"),
+    (57, 58, "Wand of Size-Stealing"),
+    (59, 67, "Wand of Substration"),
+    (68, 69, "Wand of Sudden Elevation"),
+    (70, 72, "Wand of the Caterpillar"),
+    (73, 74, "Wand of the Manticore"),
+    (75, 78, "Wand of Threefold Flame"),
+    (79, 80, "Wand of Thunder"),
+    (81, 84, "Wand of Thunderbolts"),
+    (85, 91, "Wand of Transformation"),
+    (92, 93, "Wand of Warring Phantasms"),
+    (94, 95, "Wand of Weighty Webbing"),
+    (96, 97, "Wand of Winter Wounds"),
+    (98, 100, "Wand of Woe"),
+]
+
+LEGENDARY_IMPLEMENT = [
+    (1, 15, "Rod of Cataclysm"),
+    (16, 23, "Rod of Resurrection [D]"),
+    (24, 29, "Staff of Deep Earth [AD]"),
+    (30, 35, "Staff of Dominion [AD]"),
+    (36, 43, "Staff of Elemental Air [A]"),
+    (44, 51, "Staff of Elemental Earth [A]"),
+    (52, 59, "Staff of Elemental Fire [A]"),
+    (60, 67, "Staff of Elemental Water [A]"),
+    (68, 74, "Staff of Remedy [D]"),
+    (75, 80, "Staff of the Archmage [A]"),
+    (81, 86, "Staff of the Grand Prefect [D]"),
+    (87, 94, "Staff of the Mage [A]"),
+    (95, 100, "Staff of the Void [A]"),
+]
+
+COMMON_MISC_ITEMS = [
+    (1, 4, "Bag of Caltrops"),
+    (5, 10, "Blessed Salt"),
+    (11, 14, "Candle of Comfort"),
+    (15, 16, "Candle of Confounding"),
+    (17, 22, "Candle of Contemplation"),
+    (23, 27, "Candle of Immolation^"),
+    (28, 29, "Candle of Warmth"),
+    (30, 32, "Chalice of Poison Detection"),
+    (33, 34, "Changeling Doll"),
+    (35, 38, "Charcoal of Phantasms"),
+    (39, 42, "Choker of Strangulation^"),
+    (43, 43, "Crystal Ball, Fixating^"),
+    (44, 49, "Dust of Darkness"),
+    (50, 51, "Dust of Disenchantment"),
+    (52, 54, "Dust of Revelation"),
+    (55, 55, "False Campfire"),
+    (56, 59, "Feather of Falling"),
+    (60, 63, "Flash Powder Pellet"),
+    (64, 64, "Folding Paper Staircase"),
+    (65, 67, "Halfling Firestone"),
+    (68, 71, "Halfling Hurlstone"),
+    (72, 74, "Horn of Stolen Breath^"),
+    (75, 77, "Magic Compass"),
+    (78, 79, "Master Key"),
+    (80, 80, "Pebble of Drowning^"),
+    (81, 82, "Petals of Cleansing"),
+    (83, 86, "Spike of Sealing"),
+    (87, 92, "Vampiric Earth"),
+    (93, 93, "Visor of Vicious Blinding^"),
+    (94, 97, "Wax Soul"),
+    (98, 100, "Wretched Nail^"),
+]
+
+UNCOMMON_MISC_ITEMS = [
+    (1, 1, "Amulet of the Cursed Glare"),
+    (2, 3, "Apple of Endless Slumber^"),
+    (4, 7, "Apple of Lightning's Roots"),
+    (8, 9, "Bag of Burgeoning Beans"),
+    (10, 10, "Barrel of Baboons^"),
+    (11, 11, "Belt of Second Breakfasts"),
+    (12, 13, "Bracers of Armor +1"),
+    (14, 14, "Broom of Oiling"),
+    (15, 18, "Candle of Conjuring Fire Elementals"),
+    (19, 20, "Candle of Final Hours^"),
+    (21, 21, "Candle of Shadow"),
+    (22, 22, "Candle of Spellwarding"),
+    (23, 23, "Candle of Undead Warding"),
+    (24, 24, "Chalice of Delayed Doom^"),
+    (25, 25, "Chalk of Annihiliation"),
+    (26, 27, "Crystal Songbird"),
+    (28, 28, "Dust of Desolation"),
+    (29, 33, "Dust of Discontinuity"),
+    (34, 34, "Dust of Khalil Azim"),
+    (35, 41, "Dust of Vanishing"),
+    (42, 42, "Dwarven Cord"),
+    (43, 43, "Dwarven Jumping Cube"),
+    (44, 44, "Dwarven Rhetor Statues"),
+    (45, 45, "Elven Rope"),
+    (46, 46, "Ever-Spinning Top"),
+    (47, 47, "Faerie Dust"),
+    (48, 48, "Faerie Seed"),
+    (49, 49, "First Stone"),
+    (50, 50, "Galdrtré Seed"),
+    (51, 52, "Graven Dwarven Guard Dog"),
+    (53, 53, "Head of Viggo"),
+    (54, 54, "Headless Helm^"),
+    (55, 55, "Humble Hearth-Guard"),
+    (56, 56, "Idol of Blight"),
+    (57, 57, "Jade Toad"),
+    (58, 58, "Jeweled Lizard"),
+    (59, 59, "Key to Eternity^"),
+    (60, 63, "Locket of Warding"),
+    (64, 64, "Mantle of Flame^"),
+    (65, 65, "Marvelous Shaving Razor"),
+    (66, 66, "Mermaid's Tear"),
+    (67, 69, "Mesmerizing Moneybag"),
+    (70, 70, "Mirror of Nemesis^"),
+    (71, 71, "Pendant of Greatness"),
+    (72, 72, "Phoenix Ash"),
+    (73, 73, "Phoenix Egg"),
+    (74, 74, "Phylactery of Stolen Faces"),
+    (75, 78, "Pit Tarp"),
+    (79, 81, "Plague Powder"),
+    (82, 82, "Pot of Perennial Obedience"),
+    (83, 83, "Prow-Eye Pigment"),
+    (84, 84, "Red Dragon Statuette"),
+    (85, 85, "Scales of Judgment"),
+    (86, 86, "Scales of Worth"),
+    (87, 87, "Scarab of Death^"),
+    (88, 88, "Shadowcowl Robe"),
+    (89, 91, "Shepherd's Crook"),
+    (92, 92, "Shrunken Cement"),
+    (93, 93, "Spearpoints of Strife"),
+    (94, 94, "Stolen Glamer"),
+    (95, 95, "Stone Fruit"),
+    (96, 96, "Stone of Permafrost"),
+    (97, 97, "Wanderer's Bell"),
+    (98, 98, "Witching Stick"),
+    (99, 99, "Woodwind of the Woodlands"),
+    (100, 100, "Yarn of Treasure Finding"),
+]
+
+RARE_MISC_ITEMS_1 = [
+    (1, 1, "Alchemist’s Tube"),
+    (2, 2, "Alluring Lyre"),
+    (3, 3, "Altar of Faith’s Service"),
+    (4, 10, "Amulet of Adamance"),
+    (11, 11, "Amulet of Clairvoyancy"),
+    (12, 12, "Amulet of Coagulation"),
+    (13, 13, "Amulet of Fireball Immunity"),
+    (14, 14, "Amulet of Four Seasons"),
+    (15, 15, "Amulet of Levitation"),
+    (16, 16, "Amulet of Spell Absorption"),
+    (17, 17, "Amulet of the Ape"),
+    (18, 24, "Amulet of the Iron Belly"),
+    (25, 25, "Amulet of the Maiden"),
+    (26, 26, "Armband of the Ethereal Appendage"),
+    (27, 27, "Astrolabe of the Vasty Deep"),
+    (28, 37, "Augury Sticks"),
+    (38, 44, "Bag of Winds"),
+    (45, 45, "Banner of the Lost Legion"),
+    (46, 47, "Basin of Conjuring Water Elementals"),
+    (48, 54, "Belt of Banditry"),
+    (55, 55, "Belt of Hardiness"),
+    (56, 56, "Black Book"),
+    (57, 62, "Black Gauntlet of Bel"),
+    (63, 63, "Blood Seer Stone"),
+    (64, 66, "Boots of Bounding"),
+    (67, 76, "Boots of Striding"),
+    (77, 78, "Boots of the Elven Ranger"),
+    (79, 79, "Boots of the Leopard"),
+    (80, 80, "Borrowed Ear Trumpet"),
+    (81, 83, "Bowl of Errant Reflections"),
+    (84, 90, "Bracers of Armor +2"),
+    (91, 91, "Bracers of Brawn"),
+    (92, 92, "Bramble Crown"),
+    (93, 93, "Brazen Head"),
+    (94, 94, "Brooch of Arcane Armor"),
+    (95, 95, "Brooch of the Blood Drinker"),
+    (96, 96, "Broom of Banishment"),
+    (97, 100, "Broom of Cessation"),
+]
+
+RARE_MISC_ITEMS_2 = [
+    (1, 3, "Broom of Cessation"),
+    (4, 4, "Broom of Traceless Steps"),
+    (5, 5, "Broom of Webwinding"),
+    (6, 6, "Carpet of Protection"),
+    (7, 7, "Cat's Paw"),
+    (8, 8, "Cauldron of Shattered Souls"),
+    (9, 9, "Censer of Prophetic Dreams"),
+    (10, 11, "Chalk of the Grand Seal"),
+    (12, 19, "Charm Bracelets"),
+    (20, 29, "Chime of Unlocking"),
+    (30, 30, "Chime of Warning"),
+    (31, 33, "Chimera Collar"),
+    (34, 40, "Choker of Whispers"),
+    (41, 41, "Circlet of Seeing"),
+    (42, 47, "Cloak of Deepest Shadow"),
+    (48, 48, "Cloak of Nine Lives"),
+    (49, 56, "Cloak of Protection +1"),
+    (57, 59, "Cloak of Protection +2"),
+    (60, 60, "Cloak of the Elven Ranger"),
+    (61, 61, "Cloak of the Huntmaster"),
+    (62, 64, "Cloak of the Wanderer"),
+    (65, 70, "Codex of Complexity"),
+    (71, 73, "Coin of Conscription"),
+    (74, 80, "Collar of Taming"),
+    (81, 81, "Comb of Vanity"),
+    (82, 83, "Crucible of Conjuring Fire Elementals"),
+    (84, 84, "Crucible of Eager Flame"),
+    (85, 85, "Crucible of Jealous Flame"),
+    (86, 86, "Crucible of Purgation"),
+    (87, 90, "Crystal Ball"),
+    (91, 91, "Crystal Ball, Perilous"),
+    (92, 92, "Death Shroud"),
+    (93, 93, "Deck of Laughter and Misery"),
+    (94, 100, "Deck of Many Spells"),
+]
+
+RARE_MISC_ITEMS_3 = [
+    (1, 1, "Dial of Displaced Dooms"),
+    (2, 2, "Diptych of Far-Reaching Discourse"),
+    (3, 4, "Drum of Urgency"),
+    (5, 5, "Earring of Dark Whispers^"),
+    (6, 6, "Ever-Burning Coal"),
+    (7, 7, "Everfrost Reliquary"),
+    (8, 10, "Faithful Collar"),
+    (11, 11, "Fan of Flaring Flame"),
+    (12, 12, "Fan of Foul Vapors"),
+    (13, 19, "Favor of Faithfulness"),
+    (20, 20, "Figurehead Oracle"),
+    (21, 27, "Firefly Brooch"),
+    (28, 33, "Flask of Disguises"),
+    (34, 35, "Flask of Ever-Flowing Fluids"),
+    (36, 42, "Flight Feather"),
+    (43, 43, "Gauntlets of the Storm"),
+    (44, 46, "Gem of Appraisal"),
+    (47, 47, "Gem of Bodily Discernment"),
+    (48, 49, "Gem of Conjuring Earth Elementals"),
+    (50, 50, "Gem of Overwatching Eyes"),
+    (51, 53, "Gilded Rose of Nasga"),
+    (54, 54, "Girdle of Enticement"),
+    (55, 55, "Glass Casket"),
+    (56, 56, "Glove of Death's Cries"),
+    (57, 57, "Gloves of the Fatal Touch"),
+    (58, 58, "Golden Spurs"),
+    (59, 59, "Gutter Crown"),
+    (60, 62, "Hammer of the Master Smith"),
+    (63, 63, "Hand of Calamity"),
+    (64, 73, "Hand of Disarticulation"),
+    (74, 74, "Heart of Flame"),
+    (75, 75, "Heart of Gold"),
+    (76, 77, "Heart of Stone"),
+    (78, 78, "Helm of Comprehension"),
+    (79, 81, "Helm of Disalignment"),
+    (82, 82, "Helm of the Steel Brow"),
+    (83, 83, "Hidden Tent"),
+    (84, 84, "Horn of Nargund"),
+    (85, 85, "Horn of the Eagles"),
+    (86, 88, "Howdah of the Second Stand"),
+    (89, 95, "Illusory Pigment"),
+    (96, 96, "Jar of Eyeballs"),
+    (97, 97, "Jar of Troll Blood"),
+    (98, 100, "Lantern of Figments"),
+]
+
+RARE_MISC_ITEMS_4 = [
+    (1, 3, "Lens of Revelation"),
+    (4, 4, "Lightless Slippers"),
+    (5, 10, "Lipstick of Amphibification"),
+    (11, 20, "Lipstick of Ensnarement"),
+    (21, 26, "Lipstick of Farewells"),
+    (27, 27, "Lodestone of Lairfinding"),
+    (28, 34, "Lucky Prayer Beads"),
+    (35, 35, "Magician's Hat"),
+    (36, 42, "Mantle of the Wild"),
+    (43, 44, "Medallion of Discerning Invisibility"),
+    (45, 45, "Mirror of Secondhand Sight"),
+    (46, 52, "Mirror of the Sun"),
+    (53, 53, "Mirrors of Translocation"),
+    (54, 59, "Necklace of Fickle Beauty"),
+    (60, 71, "Necklace of Naphtha"),
+    (72, 72, "Net of Plenty"),
+    (73, 80, "Orb of False Visions^"),
+    (81, 81, "Pack of the Mule"),
+    (82, 84, "Pack of the Smuggler"),
+    (85, 86, "Pearls of Invulnerability"),
+    (87, 87, "Periapt of Poison Protection"),
+    (88, 90, "Pirate's Pointer"),
+    (91, 91, "Portable Well"),
+    (92, 92, "Predator's Mantle"),
+    (93, 98, "Primeval Clay"),
+    (99, 99, "Purse of Pilfering"),
+    (100, 100, "Quilt of Convalescence"),
+]
+
+RARE_MISC_ITEMS_5 = [
+    (1, 7, "Reeds of the Rodent"),
+    (8, 8, "Reins of Command"),
+    (9, 9, "Reins of Relocation"),
+    (10, 11, "Rope of Ascent"),
+    (12, 14, "Saddle Blanket of the Steppe"),
+    (15, 15, "Sail of the Scorpion"),
+    (16, 16, "Sanctified Urn"),
+    (17, 17, "Sandals of Steady Ground"),
+    (18, 20, "Sandals of the Straightened Path"),
+    (21, 27, "Sash of Sepulchral Service"),
+    (28, 30, "Scarab of Life"),
+    (31, 31, "Seat of the Bearmaster"),
+    (32, 34, "Shadow Slippers"),
+    (35, 41, "Shroud of Dusty Decedants"),
+    (42, 42, "Skull of the Second Glance"),
+    (43, 43, "Smuggler's Cart"),
+    (44, 44, "Sphinx-Feather Headdress"),
+    (45, 45, "Spider Climbing Slippers"),
+    (46, 48, "Spidersilk Cloak"),
+    (49, 51, "Spike of Second Chances"),
+    (52, 52, "Spirit Slippers"),
+    (53, 59, "Starlight Mantle"),
+    (60, 66, "Stone Sparrow Nest"),
+    (67, 67, "Talking Head"),
+    (68, 68, "Tankard of Purification"),
+    (69, 70, "Thurible of Conjuring Air Elementals"),
+    (71, 71, "Thurible of Pyromancy"),
+    (72, 72, "Torrential Parasol"),
+    (73, 73, "Trailblazer's Tunic"),
+    (74, 82, "Unremarkable Cloak"),
+    (83, 83, "Visor of the Eagle"),
+    (84, 84, "War-Dress of the Exquisitrix"),
+    (85, 85, "Watchman's Friend"),
+    (86, 86, "Whistle of Finality"),
+    (87, 89, "Whistle of the Menagerie"),
+    (90, 92, "Whistle of Winged Words"),
+    (93, 94, "White Elephant Figurine"),
+    (95, 95, "White Sapling"),
+    (96, 96, "Window to the Spheres"),
+    (97, 98, "Wristlet of Rectification"),
+    (99, 100, "Wyvern Whistle"),
+]
+
+VERY_RARE_MISC_ITEMS_1 = [
+    (1, 1, "Alabaster Robe"),
+    (2, 2, "Amulet of Edification"),
+    (3, 4, "Amulet of Elemental Resistance"),
+    (5, 5, "Amulet of Indiscernibility"),
+    (6, 6, "Amulet of Iskara's Touch"),
+    (7, 7, "Amulet of Sky's Promise"),
+    (8, 8, "Amulet of Temperate Travels"),
+    (9, 9, "Amulet of the All-Seeing Eye"),
+    (10, 10, "Angel's Favor"),
+    (11, 11, "Antlered Crown of Ravanor"),
+    (12, 13, "Atlas of Dominion"),
+    (14, 14, "Bag of Oblivion"),
+    (15, 15, "Bag of Stolen Voices"),
+    (16, 16, "Basin of the Maelstrom"),
+    (17, 17, "Bell of Telith"),
+    (18, 18, "Belt of Dwarvenkind"),
+    (19, 20, "Belt of Giant Strength, Hill"),
+    (21, 22, "Belt of Giant Strength, Stone"),
+    (23, 23, "Belt of Oozekind"),
+    (24, 24, "Blackbird Brooch"),
+    (25, 25, "Blackened Lotus"),
+    (26, 26, "Blindfold of the Ibis"),
+    (27, 27, "Blue Eye of the Seer"),
+    (28, 28, "Book of Secrets"),
+    (29, 29, "Book of the Scorned Sculptor"),
+    (30, 30, "Boots of Arcane Departure"),
+    (31, 31, "Boots of Earth's Might"),
+    (32, 32, "Boots of Escape"),
+    (33, 33, "Boots of Giant Leaps"),
+    (34, 34, "Boots of Iron"),
+    (35, 35, "Boots of Levitating"),
+    (36, 36, "Boots of Pursuit"),
+    (37, 37, "Boots of the Dastard"),
+    (38, 38, "Boots of the Locust"),
+    (39, 39, "Boots of the Prizefighter"),
+    (40, 40, "Boots of the Wayfinder"),
+    (41, 44, "Bottomless Bag"),
+    (45, 45, "Bracers of Armor +3"),
+    (46, 46, "Bracers of Armor +4"),
+    (47, 47, "Bridle of the Nixie"),
+    (48, 48, "Broom of Bluster"),
+    (49, 49, "Cauldron of Miscibility"),
+    (50, 50, "Cauldron of the Risen"),
+    (51, 51, "Centipede Bracelet"),
+    (52, 52, "Champion's Bell"),
+    (53, 53, "Cheetah Skin of Kushtu-Munde"),
+    (54, 54, "Chime of Quieting"),
+    (55, 55, "Circlet of Classical Cant"),
+    (56, 56, "Circlet of the King Cobra"),
+    (57, 57, "Cloak of Protection +3"),
+    (58, 58, "Cloak of Skinchanging"),
+    (59, 59, "Cloak of the Storm's Eye"),
+    (60, 60, "Collar of Beast Growth"),
+    (61, 62, "Collar of Conversation"),
+    (63, 64, "Conch of Auspicious Purity"),
+    (65, 66, "Crater's Crown"),
+    (67, 68, "Crimson Crucible"),
+    (69, 69, "Crown of Occult Visions"),
+    (70, 70, "Crystal Ball, Clairaudient"),
+    (71, 71, "Crystal Ball, Form Falsifying"),
+    (72, 72, "Crystal Ball, Indiscernible"),
+    (73, 73, "Crystal Ball, Stalking"),
+    (74, 74, "Crystal Ball, Telepathic"),
+    (75, 75, "Crystal Slippers"),
+    (76, 76, "Cube of Cold Immunity"),
+    (77, 77, "Dead Eye"),
+    (78, 78, "Dead Man's Collar"),
+    (79, 80, "Dead Man's Hand"),
+    (81, 82, "Desert Rose"),
+    (83, 83, "Diadem of Virtue"),
+    (84, 84, "Dispensation-Stone of Zahar"),
+    (85, 86, "Dragonfly Cloak"),
+    (87, 87, "Drum of Devastation"),
+    (88, 88, "Eye of the Storm"),
+    (89, 89, "Eye of the Tiger"),
+    (90, 90, "Figurehead of Flame"),
+    (91, 91, "Figurehead of Fog"),
+    (92, 92, "Flag of Dread"),
+    (93, 93, "Flag of False Faces"),
+    (94, 94, "Flask of Diseases"),
+    (95, 95, "Flower Crown"),
+    (96, 96, "Flute of the Tempest"),
+    (97, 97, "Garter of the Naiad"),
+    (98, 98, "Gauntlets of Ogre Strength"),
+    (99, 99, "Gem of Force"),
+    (100, 100, "Gem of Revelation"),
+]
+
+VERY_RARE_MISC_ITEMS_2 = [
+    (1, 1, "Giant Falconer's Gauntlet"),
+    (2, 2, "Gloves of Nimble Fingers"),
+    (3, 3, "Golden Thread"),
+    (4, 4, "Grinning Demon Mask"),
+    (5, 5, "Hag Stone"),
+    (6, 6, "Hand of the Warrior"),
+    (7, 7, "Harp of Blossoming Bounty"),
+    (8, 8, "Heart of Eternity"),
+    (9, 9, "Heart of Ice"),
+    (10, 10, "Helm of Ancient Canopies"),
+    (11, 11, "Helm of Awe"),
+    (12, 12, "Helm of Imperishable Fame"),
+    (13, 13, "Helm of Oblivion"),
+    (14, 14, "Helm of Ornaron"),
+    (15, 16, "Helm of Perpetual Sacrifice"),
+    (17, 18, "Helm of Telepathy"),
+    (19, 20, "Helm of Teleportation"),
+    (21, 21, "Helm of the Hive"),
+    (22, 22, "Helm of the Natural Commander"),
+    (23, 23, "High Throne of the Vantage"),
+    (24, 24, "Horn of Fallen Walls"),
+    (25, 25, "Horn of Horror"),
+    (26, 26, "Horn of Libations"),
+    (27, 27, "Horn of Sorrow"),
+    (28, 29, "Horseshoes of Flight"),
+    (30, 30, "Inexorable Orb of Multifarious Incandescence"),
+    (31, 31, "Infernal Whistle"),
+    (32, 32, "Kemeshi Battle Crescent"),
+    (33, 34, "Key of Supplemental Storage"),
+    (35, 35, "Kraken Harness"),
+    (36, 36, "Laconic Oracle"),
+    (37, 37, "Lantern of Unveiling"),
+    (38, 38, "Ledger of Life and Lesions"),
+    (39, 39, "Lens of Lost Ways"),
+    (40, 41, "Magic Carpet"),
+    (42, 42, "Marvelous Dwarven Mechanism"),
+    (43, 43, "Mask of Feral Mouths"),
+    (44, 44, "Mask of the Depths"),
+    (45, 45, "Medallion of Whispers"),
+    (46, 46, "Necklace of Acclimatization"),
+    (47, 47, "Necklace of the Sylvan Princess"),
+    (48, 48, "Oar of Lammala"),
+    (49, 49, "Ocean's Due"),
+    (50, 50, "Oozing Gospel of Kaleth"),
+    (51, 51, "Orchard Sapling"),
+    (52, 52, "Pavilion of Protection"),
+    (53, 53, "Periapt of Plague Protection"),
+    (54, 54, "Phylactery of Fates"),
+    (55, 55, "Pot of Perpetual Pudding"),
+    (56, 56, "Preserved Familiar"),
+    (57, 57, "Prophet's Stele"),
+    (58, 58, "Robe of the Lizard Lord"),
+    (59, 59, "Robe of Useful Things"),
+    (60, 60, "Rope of Binding"),
+    (61, 62, "Sail of Naurivus"),
+    (63, 63, "Sash of the Watchman"),
+    (64, 64, "Saw of Substitution"),
+    (65, 65, "Scepter of Sacred Power"),
+    (66, 66, "Seat of the Storyteller"),
+    (67, 68, "Second Sun"),
+    (69, 69, "Seismic Horn"),
+    (70, 70, "Seismic Sandals"),
+    (71, 71, "Shroud of the Unblemished Soul"),
+    (72, 72, "Slippers of Silence"),
+    (73, 73, "Slippers of Sky Dancing"),
+    (74, 74, "Slippers of Water Striding"),
+    (75, 75, "Sorcerer's Skullcap"),
+    (76, 76, "Soul Contract"),
+    (77, 77, "Spectacular Pigment"),
+    (78, 78, "Standard of Encampment"),
+    (79, 79, "Stone Stylus"),
+    (80, 80, "Symbol of the Burning Sun"),
+    (81, 81, "Thurible of Life's Righteousness"),
+    (82, 82, "Thurible of Sanctification"),
+    (83, 83, "Thurible of Shrouding Smoke"),
+    (84, 84, "Tokay Flute"),
+    (85, 85, "Torc of Sharp Tongues"),
+    (86, 86, "Torc of Subtle Sorcery"),
+    (87, 87, "Torc of the North"),
+    (88, 89, "Traveling Library"),
+    (90, 91, "Unearthly Banner"),
+    (92, 93, "Unwavering Standard"),
+    (94, 94, "Veil of the Unflinching Gaze"),
+    (95, 95, "Void of Memories"),
+    (96, 96, "Wages of Fortune"),
+    (97, 97, "Winged Sandals"),
+    (98, 98, "Witch's Broom"),
+    (99, 100, "Witch's Shirt"),
+]
+
+LEGENDARY_MISC_ITEMS = [
+    (1, 2, "Aesri's Broom"),
+    (3, 4, "Amulet of Krystar"),
+    (5, 6, "Banner of the Bloody Dawn"),
+    (7, 8, "Belt of Giant Strength, Fire"),
+    (9, 10, "Belt of Giant Strength, Frost"),
+    (11, 11, "Blacksteel Helm"),
+    (12, 13, "Bottled City"),
+    (14, 16, "Bracers of Armor +5"),
+    (17, 18, "Bracers of Armor +6"),
+    (19, 20, "Bracers of Armor +7"),
+    (21, 22, "Bridle of the Behemoth"),
+    (23, 24, "Chalice of Blood"),
+    (25, 26, "Chariot of the Gods"),
+    (27, 28, "Collapsible Boat"),
+    (29, 29, "Crown of Bones"),
+    (30, 31, "Crown of the Deep Mountain"),
+    (32, 33, "Crown of the High King"),
+    (34, 35, "Crown of the Third Eye"),
+    (36, 37, "Drum of Terror"),
+    (38, 39, "Emblem of the Eagle"),
+    (40, 40, "Eternal Torch of Mityara"),
+    (41, 42, "Eye of Kaleth"),
+    (43, 44, "Gateway to the Spheres"),
+    (45, 46, "Genie Bottle"),
+    (47, 48, "Girdle of the Titans, Greater"),
+    (49, 50, "Girdle of the Titans, Lesser"),
+    (51, 52, "Hammer of Korten Khador"),
+    (53, 54, "Hand of Gold"),
+    (55, 55, "Hand of Lareth"),
+    (56, 56, "Heavenly Fare"),
+    (57, 58, "Heaven's Censer"),
+    (59, 59, "Helm of the Winged Sun"),
+    (60, 60, "Holy Talisman of the Winged Sun"),
+    (61, 61, "Horn of the Wild Hunt"),
+    (62, 63, "Inexhaustible Flask"),
+    (64, 64, "Iron-Bound Book of Xisuthros"),
+    (65, 66, "Iron Crown of the Sorcerer-Kings"),
+    (67, 68, "Iron Mask of Cyfaraun"),
+    (69, 70, "Keys to the Land of the Dead"),
+    (71, 71, "Litter of the Resplendent Prince"),
+    (72, 72, "Lizardskin Altar"),
+    (73, 73, "Manual of the Master Machinist"),
+    (74, 75, "Mask of the Basilisk"),
+    (76, 77, "Mask of the Catoblepas"),
+    (78, 78, "Necromantic Mirror"),
+    (79, 80, "Panoply of the Imperial Warmistress"),
+    (81, 81, "Paseplitem"),
+    (82, 83, "Phoenix Standard"),
+    (84, 84, "Relic of the True Martyr"),
+    (85, 86, "Robe of Dancing Colors"),
+    (87, 87, "Saddle of the Aerophract"),
+    (88, 89, "Scepter of Spell Shattering"),
+    (90, 90, "Scepter of the Monkey King"),
+    (91, 91, "Scepter of the Mud Emperors"),
+    (92, 92, "Seven-League Boots"),
+    (93, 93, "Shard of the Logos"),
+    (94, 94, "Skysteel Helm"),
+    (95, 96, "Talisman of True Transformation"),
+    (97, 98, "Visor of Ammonar's Gaze"),
+    (99, 100, "Visor of the Vampire"),
+]
+
+UNCOMMON_SWORDS = [
+    (1, 2, "Short Sword +1, Fencer’s Foil^"),
+    (3, 4, "Sword -1, Hallucination^"),
+    (5, 90, "Sword +1"),
+    (91, 92, "Sword +1, Hatred^"),
+    (93, 94, "Sword +1, Haunted"),
+    (95, 96, "Sword +1, Honor-Bound"),
+    (97, 98, "Sword +1, Seditious"),
+    (99, 100, "Two-Handed Sword +1, Impetuous"),
+]
+
+RARE_SWORDS = [
+    (1, 1, "Dagger +1, Assassin’s"),
+    (2, 4, "Dagger +1, Bloodletter"),
+    (5, 5, "Dagger +1, Bloodseeking"),
+    (6, 6, "Dagger +1, Death Double"),
+    (7, 7, "Dagger +1, Disarming"),
+    (8, 10, "Dagger +1, Enervating"),
+    (11, 11, "Dagger +1, Fool's"),
+    (12, 13, "Dagger +1, Fortune's Friend"),
+    (14, 14, "Dagger +1, Gutting"),
+    (15, 15, "Dagger +1, Harvester's"),
+    (16, 16, "Dagger +1, Mercystroke"),
+    (17, 17, "Dagger +1, Moontear"),
+    (18, 18, "Dagger +1, Runecarver"),
+    (19, 19, "Dagger +1, Sacrificial"),
+    (20, 22, "Dagger +1, Stinger"),
+    (23, 23, "Dagger +1, Treacherous"),
+    (24, 24, "Dagger +1, Venomous"),
+
+    (25, 25, "Short Sword +1, Combat Reflexes"),
+    (26, 28, "Short Sword +1, Flashing"),
+    (29, 29, "Short Sword +1, Manes"),
+    (30, 30, "Short Sword +1, Nimble"),
+    (31, 31, "Short Sword +1, Riposte"),
+    (32, 32, "Short Sword +1, Slicing"),
+    (33, 33, "Short Sword +2, Command"),
+    (34, 34, "Short Sword +2, Despair"),
+    (35, 35, "Short Sword +2, Wolf’s Fang"),
+
+    (36, 38, "Sword +0, Snaring^"),
+    (39, 50, "Sword +1, +2 versus X"),
+    (51, 53, "Sword +1, +3 versus X"),
+    (54, 54, "Sword +1, Adder’s Kiss"),
+    (55, 55, "Sword +1, Alacrity"),
+    (56, 56, "Sword +1, Bane"),
+    (57, 57, "Sword +1, Bright"),
+    (58, 58, "Sword +1, Death Drinker"),
+    (59, 59, "Sword +1, Deathless"),
+    (60, 60, "Sword +1, Deeds"),
+    (61, 61, "Sword +1, Desperate"),
+    (62, 62, "Sword +1, Fiery Kennels"),
+    (63, 63, "Sword +1, Gracing"),
+    (64, 66, "Sword +1, Hidden Flame"),
+    (67, 67, "Sword +1, Icespike"),
+    (68, 68, "Sword +1, Locating"),
+    (69, 69, "Sword +1, Lone Hero"),
+    (70, 72, "Sword +1, Oblivion"),
+    (73, 75, "Sword +1, Salvation"),
+    (76, 76, "Sword +1, Seeking"),
+    (77, 77, "Sword +1, Wardbane"),
+    (78, 78, "Sword +1, Watchful"),
+    (79, 85, "Sword +2"),
+    (86, 86, "Sword +2, +3 versus X"),
+    (87, 87, "Sword +2, Beguilement"),
+    (88, 88, "Sword +2, Valor"),
+
+    (89, 91, "Two-Handed Sword +1, Blade-Dancing"),
+    (92, 94, "Two-Handed Sword +1, Blazing Sun"),
+    (95, 95, "Two-Handed Sword +1, Fiendish"),
+    (96, 96, "Two-Handed Sword +1, Frothing"),
+    (97, 99, "Two-Handed Sword +1, Herald’s"),
+    (100, 100, "Two-Handed Sword +1, Perseverance"),
+]
+
+VERY_RARE_SWORDS = [
+    (1, 2, "Dagger +1, Delver's"),
+    (3, 3, "Dagger +1, Spellstealing"),
+    (4, 4, "Dagger +2, Displacement"),
+    (5, 6, "Dagger +2, Flaying"),
+    (7, 7, "Dagger +2, Marrow-Scraper"),
+    (8, 11, "Dagger +2, Vampiric"),
+    (12, 12, "Dagger +2, Vulpine"),
+    (13, 17, "Dagger +3, Unseen"),
+
+    (18, 19, "Short Sword +1, Harmonious"),
+    (20, 26, "Short Sword +2, Dancing"),
+    (27, 28, "Short Sword +2, First Strike"),
+    (29, 29, "Short Sword +2, Graceful"),
+    (30, 30, "Short Sword +2, Sands"),
+    (31, 33, "Short Sword +2, Scorpion"),
+    (34, 34, "Short Sword +2, Spell Channeling"),
+    (35, 36, "Short Sword +3, True Flame"),
+
+    (37, 39, "Sword +1, Flamebrand"),
+    (40, 42, "Sword +1, Mariner's"),
+    (43, 44, "Sword +1, True Death"),
+    (45, 45, "Sword +2, Autonomy"),
+    (46, 47, "Sword +2, Clarion"),
+    (48, 50, "Sword +2, Cold Iron"),
+    (51, 53, "Sword +2, Fetid Decay"),
+    (54, 55, "Sword +2, Frostbane"),
+    (56, 58, "Sword +2, Maiming"),
+    (59, 59, "Sword +2, Purifier"),
+    (60, 61, "Sword +2, Resonant"),
+    (62, 62, "Sword +2, Reversion"),
+    (63, 65, "Sword +2, Sarcophagal"),
+    (66, 67, "Sword +2, Shadows"),
+    (68, 68, "Sword +2, Steadfast"),
+    (69, 69, "Sword +2, Subjugation"),
+    (70, 75, "Sword +2, Swift"),
+    (76, 78, "Sword +2, Unbinding"),
+    (79, 83, "Sword +2, Vitality"),
+    (84, 91, "Sword +3"),
+
+    (92, 93, "Two-Handed Sword +2, Firestarter"),
+    (94, 97, "Two-Handed Sword +2, Mageslayer"),
+    (98, 100, "Two-Handed Sword +3, Cleaving"),
+]
+
+LEGENDARY_SWORDS = [
+    (1, 9, "Cutlass of the Four Crescents"),
+    (10, 18, "Fang of Nargund"),
+    (19, 27, "Fire-Eater Sword"),
+    (28, 36, "Red Sword of the Warlord"),
+    (37, 45, "Ruinblade"),
+    (46, 54, "Sword of Celerity"),
+    (55, 64, "Sword of Fortune"),
+    (65, 73, "Sword of Holy Fire"),
+    (74, 82, "Sword of Kings"),
+    (83, 91, "Sword of Withering"),
+    (92, 100, "Vorpal Sword"),
+]
+
+UNCOMMON_MISC_WEAPONS = [
+    (1, 1, "Arrow +1, Travel (1d2)"),
+    (2, 2, "Arrow +1, Splintering"),
+    (3, 3, "Arrow +2, Impetus"),
+    (4, 4, "Arrow +2, Ire"),
+    (5, 5, "Arrow +2, Lesser Death"),
+    (6, 6, "Arrow +2, Slow Death"),
+    (7, 7, "Arrow +3, Banshee"),
+    (8, 8, "Arrow +3, Conflagration"),
+    (9, 9, "Arrow +3, Death"),
+    (10, 10, "Arrow +3, Shipbreaker"),
+    (11, 11, "Battle Axe +1, Facebiter"),
+    (12, 12, "Bolt +1, Ascertaining (1d4)"),
+    (13, 13, "Bolt +3, Entanglement"),
+    (14, 14, "Club +1, Trollbone"),
+    (15, 15, "Great Axe +1, Lumbering"),
+    (16, 16, "Mace +1, Salient Sun"),
+    (17, 17, "Sling Bullet +1, Relief (1d10)"),
+    (18, 18, "Sling Bullet +1, Whalloping (1d3)"),
+    (19, 19, "Spear +1, Headlong"),
+    (20, 20, "Warhammer +1, Weakening"),
+    (21, 22, "Weapon -1, Hallucination"),
+    (23, 100, "Weapon +1"),
+]
+
+RARE_MISC_WEAPONS = [
+    (1, 1, "Battle Axe +1, Brine-Cutter"),
+    (2, 2, "Battle Axe +1, Gratitude"),
+    (3, 6, "Club +1, Fetching"),
+    (7, 7, "Composite Bow +1, Frostfall"),
+    (8, 11, "Crossbow +1, Dragon's Breath"),
+    (12, 12, "Crossbow +1, Tidepiercer"),
+    (13, 13, "Flail +1, Banetide"),
+    (14, 16, "Flail +1, Loathsome"),
+    (17, 20, "Great Axe +1, Crippling"),
+    (21, 21, "Great Axe +1, Savage's"),
+    (22, 22, "Hand Axe +2, Spite"),
+    (23, 25, "Javelin +1, Piercing"),
+    (26, 29, "Javelin +1, Python"),
+    (30, 32, "Javelin +1, Thunderbolt"),
+    (33, 34, "Long Bow +1, Arrowstorm"),
+    (35, 37, "Mace +1, Life's Touch"),
+    (38, 41, "Mace +1, Visceral"),
+    (42, 44, "Morning Star +1, Mourning"),
+    (45, 48, "Net +1, Webbing"),
+    (49, 52, "Polearm +1, Mesmerizing"),
+    (53, 53, "Polearm +2, Reaching"),
+    (54, 54, "Short Bow +1, Adept"),
+    (55, 55, "Short Bow +1, Hunting"),
+    (56, 56, "Short Bow +2, Elemental"),
+    (57, 57, "Sling +1, Corsair's"),
+    (58, 58, "Sling +1, Fortunate"),
+    (59, 62, "Sling +1, Holy"),
+    (63, 63, "Spear +1, Righteous Hand"),
+    (64, 67, "Spear +1, Summit's Skewer"),
+    (68, 68, "Spear +1, Vigilant"),
+    (69, 71, "Warhammer +1, Faith's Shield"),
+    (72, 83, "Weapon +1, +2 versus X"),
+    (84, 86, "Weapon +1, +3 versus X"),
+    (87, 93, "Weapon +2"),
+    (94, 94, "Weapon +2, +3 versus X"),
+    (95, 97, "Whip +1, Manticore"),
+    (98, 100, "Whip +1, Tyrant's"),
+]
+
+
+VERY_RARE_MISC_WEAPONS = [
+    (1, 1, "Battle Axe +1, Leopard"),
+    (2, 5, "Battle Axe +3, Pillaging"),
+    (6, 8, "Club +1, Marshal's"),
+    (9, 9, "Composite Bow +1, Frostfall"),
+    (10, 10, "Composite Bow +1, Manhunter"),
+    (11, 14, "Composite Bow +2, All-Seeing"),
+    (15, 16, "Composite Bow +2, Marksman's"),
+    (17, 17, "Crossbow +1, Second Death"),
+    (18, 18, "Crossbow +2, Ignition"),
+    (19, 22, "Flail +2, Frightful"),
+    (23, 25, "Flail +2, Wreaking"),
+    (26, 28, "Great Axe +2, Giantslayer"),
+    (29, 29, "Hand Axe +1, Undercutter"),
+    (30, 31, "Hand Axe +2, Mountaineering"),
+    (32, 33, "Javelin +1, Harpooning"),
+    (34, 38, "Javelin +3, Hurling"),
+    (39, 39, "Lance +1, Skyfall"),
+    (40, 40, "Lance +2, Soaring Steeds"),
+    (41, 42, "Long Bow +2, Distance"),
+    (43, 45, "Long Bow +2, Solar"),
+    (46, 49, "Mace +2, Phoenix Fire"),
+    (50, 53, "Morning Star +2, Gatecrasher"),
+    (54, 56, "Morning Star +2, Toppling"),
+    (57, 60, "Morning Star +3, Ferocity"),
+    (61, 64, "Net +3, Spell-Shackling"),
+    (65, 66, "Polearm +2, Thrassian"),
+    (67, 70, "Polearm +3, Impacting"),
+    (71, 72, "Sling +2, Girding"),
+    (73, 74, "Sling +2, Strangling"),
+    (75, 75, "Spear +2, Forking"),
+    (76, 77, "Spear +2, Nightbringer"),
+    (78, 78, "Spear +2, Serpent's Tongue"),
+    (79, 81, "Spear +2, Submersion"),
+    (82, 82, "Spear +2, Wolf-Fang"),
+    (83, 86, "Spear +3, Glacial"),
+    (87, 88, "Warhammer +1, Runtcrusher"),
+    (89, 96, "Weapon +3"),
+    (97, 100, "Whip +3, Snakebite"),
+]
+
+RARE_ARMOR = [
+    (1, 2,   "Armor +1, +2 versus X"),
+    (3, 3,   "Armor +1, +3 versus X"),
+    (4, 13,  "Armor +2"),
+    (14, 14, "Banded Plate Armor +1, Campaigner's"),
+    (15, 15, "Banded Plate Armor +1, Venomproof"),
+    (16, 16, "Chain Mail Armor +1, Adaptive"),
+    (17, 17, "Lamellar Armor +1, Turtling"),
+    (18, 20, "Laminated Linen Armor +1, Abiding"),
+    (21, 21, "Laminated Linen Armor +1, Recruiter's"),
+    (22, 22, "Leather Armor +1, Acceleration"),
+    (23, 23, "Leather Armor +1, Eelskin"),
+    (24, 24, "Leather Armor +1, Immunizing"),
+    (25, 25, "Leather Armor +1, Larcenist's"),
+    (26, 26, "Leather Armor +2, Borrowed Time"),
+    (27, 27, "Leather Armor +2, Second Skin"),
+    (28, 28, "Light Arena Armor +1, Pitfighter"),
+    (29, 30, "Plate Armor +1, Dauntless"),
+    (31, 35, "Plate Armor +1, Shattering"),
+    (36, 36, "Ring Mail +1, Refractive"),
+
+    (37, 38, "Shield +1, +2 versus X"),
+    (39, 39, "Shield +1, +3 versus Missiles"),
+    (40, 45, "Shield +1, Brineblast"),
+    (46, 46, "Shield +1, Burden"),
+    (47, 47, "Shield +1, Defender"),
+    (48, 50, "Shield +1, Dragonslayer"),
+    (51, 55, "Shield +1, Dreadful"),
+    (56, 58, "Shield +1, Gloating"),
+    (59, 61, "Shield +1, Kraken"),
+    (62, 63, "Shield +1, Lunar"),
+    (64, 69, "Shield +1, Penultimate Blow"),
+    (70, 75, "Shield +1, Postern"),
+    (76, 76, "Shield +1, Ram and Star"),
+    (77, 78, "Shield +1, Shade"),
+    (79, 83, "Shield +1, Starless"),
+    (84, 84, "Shield +1, Steady"),
+    (85, 89, "Shield +1, Stonebreath"),
+    (90, 90, "Shield +1, Unbroken Line"),
+    (91, 100,"Shield +2")
+]
+
+VERY_RARE_ARMOR = [
+    (1, 4,   "Armor +3"),
+
+    (5, 6,   "Banded Plate Armor +2, Spellward"),
+    (7, 8,   "Banded Plate Armor +2, Swarmlord"),
+
+    (9, 9,   "Chain Mail Armor +1, Defiant"),
+    (10, 10, "Chain Mail Armor +1, Outrider"),
+    (11, 12, "Chain Mail Armor +2, Fire Resistance"),
+    (13, 15, "Chain Mail Armor +2, Tundra"),
+    (16, 20, "Chain Mail Armor +3, Miasmic"),
+
+    (21, 21, "Hide Armor +2, Wilds"),
+    (22, 22, "Hide Armor +3, Bestial"),
+    (23, 26, "Hide Armor +3, Unpierceable"),
+
+    (27, 27, "Lamellar Armor +1, Scarab"),
+    (28, 31, "Lamellar Armor +3, Khan's"),
+
+    (32, 32, "Leather Armor +1, Nautical"),
+    (33, 34, "Leather Armor +2, Corsair's"),
+    (35, 36, "Leather Armor +2, Lightless"),
+    (37, 38, "Leather Armor +2, Springing"),
+    (39, 40, "Leather Armor +2, Tenacious"),
+    (41, 42, "Leather Armor +2, Winged Sun"),
+    (43, 47, "Leather Armor +3, Stealthy"),
+
+    (48, 51, "Plate Armor +1, Depths"),
+    (52, 52, "Plate Armor +1, Resonant"),
+    (53, 55, "Plate Armor +2, Freedom"),
+    (56, 57, "Plate Armor +2, Juggernaut"),
+    (58, 62, "Plate Armor +3, Eternal Sentinel"),
+    (63, 65, "Plate Armor +3, Featherweight"),
+
+    (66, 67, "Scale Armor +1, Summer"),
+    (68, 70, "Scale Armor +2, Serpent"),
+    (71, 72, "Scale Armor +2, Strength"),
+
+    (73, 73, "Shield +1, Bravo's"),
+    (74, 74, "Shield +1, Life's Respite"),
+    (75, 76, "Shield +2, Discovery"),
+    (77, 77, "Shield +2, Mageslayer's"),
+    (78, 79, "Shield +2, Second March"),
+    (80, 80, "Shield +2, Seer's"),
+    (81, 81, "Shield +2, Shining Silver"),
+    (82, 85, "Shield +2, Sphinx's"),
+    (86, 88, "Shield +2, Storms"),
+    (89, 91, "Shield +2, Strategos"),
+
+    (92, 95, "Shield +3"),
+    (96, 100,"Shield +3, Missile Turning")
+]
+
+LEGENDARY_ARMOR = [
+    (1, 7,   "Armor of Final Orders"),
+    (8, 14,  "Armor of Immaculate Purity"),
+    (15, 21, "Armor of Invulnerability"),
+    (22, 27, "Armor of the First Vaultlord"),
+    (28, 34, "Armor of the Invincible Conqueror"),
+    (35, 41, "Armor of the Tomb Lord"),
+    (42, 48, "Armor of the Unyielding Mountain"),
+
+    (49, 55, "Cuirass of Inescapable Victory"),
+
+    (56, 61, "Gleaming Disc of Ammonar"),
+    (62, 68, "Hide of the Troll King"),
+
+    (69, 74, "Panoply of Life’s Grasp"),
+    (75, 80, "Panoply of the Destroyer"),
+
+    (81, 87, "Shield of the Empyrean Heavens"),
+    (88, 93, "Shield of the Iron Curtain"),
+
+    (94, 100, "Starforged Suit")
+]
 
 
 
 
 
-SUBTABLE_ROLLERS = {
-    "Common Potions 1": roll_from_common_potions_1,
-    "Common Potions 2": roll_from_common_potions_2,
-    "Common Potions 3": roll_from_common_potions_3,
-    "Uncommon Potions 1": roll_from_uncommon_potions_1,
-    "Uncommon Potions 2": roll_from_uncommon_potions_2,
-    "Uncommon Potions 3": roll_from_uncommon_potions_3,
-    "Very Rare Potions": roll_from_very_rare_potions,
-    "Uncommon Rings": roll_uncommon_ring,
-    "Rare Rings 1": roll_rare_ring_1,
-    "Rare Rings 2": roll_rare_ring_2,
-    "Very Rare Rings": roll_very_rare_ring,
-    "Legendary Rings": roll_legendary_ring,
-    "Common Scrolls": roll_common_scroll,
-    "Uncommon Scrolls": roll_uncommon_scroll,
-    "Rare Scrolls": roll_rare_scroll,
-    "Very Rare Scrolls": roll_very_rare_scroll,
-    "Legendary Scrolls": roll_legendary_scroll,
-}
+LEGENDARY_MISC_WEAPONS = [
+    (1, 7, "Axe of Bitterness"),
+    (8, 15, "Bow of the Fallen Sky"),
+    (16, 22, "Bow of the Great Eagles"),
+    (23, 29, "Bow of the Unconquered Sun"),
+    (30, 36, "Crystal Spear"),
+    (37, 43, "Dwimmermaul"),
+    (44, 49, "Glaive of the Blade-Goddess"),
+    (50, 55, "Goblin-Spitter"),
+    (56, 61, "Great Axe of the North"),
+    (62, 67, "Hurgon's Axe"),
+    (68, 73, "Maul of the Earth's Heart"),
+    (74, 80, "Scourge of Law"),
+    (81, 87, "Shining Spear"),
+    (88, 94, "Warhammer +2, Dwarven Hurler"),
+    (95, 100, "Warhammer of Türas"),
+]
 
-# -----------------------------------------------------------
-# MAPOWANIE TRYBÓW NA LOGIKĘ
-# -----------------------------------------------------------
+UNCOMMON_ARMOR = [
+    (1, 2,   "Armor -1, Hallucination"),
+    (3, 46,  "Armor +1"),
+    (47, 50, "Armor +1, Crushing"),
+    (51, 52, "Shield -1, Hallucination"),
+    (53, 96, "Shield +1"),
+    (97, 98, "Shield +1, Cautious"),
+    (99, 100,"Shield +1, Cowardly"),
+]
 
-def get_item_generation_logic(mode: str):
-    """
-    Classic → używa logiki 'classic_magic_item_rolls'
-    Heroic/Gritty → używają tej samej logiki 'heroic_magic_item_rolls'
-    """
-    mode = normalize_mode(mode)
 
-    if mode == "Classic":
-        return classic_magic_item_rolls
-    else:
-        # Heroic i Gritty = identyczne
-        return heroic_magic_item_rolls
+CREATURE_TYPES = [
+    (1, 1, "Angels"),
+    (2, 2, "Animals"),
+    (3, 3, "Automatons & Constructs"),
+    (4, 4, "Beastmen"),
+    (5, 5, "Demons"),
+    (6, 6, "Dragons"),
+    (7, 7, "Dwarves, Gnomes & Halflings"),
+    (8, 8, "Elementals"),
+    (9, 9, "Elves, Faeries, & Nymphs"),
+    (10, 10, "Giants"),
+    (11, 11, "Humans"),
+    (12, 12, "Lycanthropes"),
+    (13, 13, "Oozes"),
+    (14, 14, "Plants"),
+    (15, 15, "Regenerating Creatures"),
+    (16, 16, "Sea Creatures"),
+    (17, 17, "Spellcasters"),
+    (18, 18, "Undead"),
+    (19, 19, "Vermin"),
+    (20, 20, "ROLL_TWICE")   # specjalny przypadek
+]
 
-def classic_magic_item_rolls(level: int):
-    """
-    Placeholder — tutaj trafi prawdziwa logika losowania magic items
-    dla trybu Classic.
-    """
-    return {
-        "mode": "Classic",
-        "level": level,
-        "items": ["TODO: classic logic not implemented"]
-    }
+MISC_WEAPON_TYPES = [
+    (1, 6, "Ammunition"),
+    (7, 9, "Axe"),
+    (10, 12, "Bludgeon"),
+    (13, 16, "Bow"),
+    (17, 19, "Spear"),
+    (20, 20, "Other"),
+]
 
-def heroic_magic_item_rolls(level: int):
-    """
-    Placeholder — Heroic i Gritty działają tak samo.
-    """
-    return {
-        "mode": "Heroic/Gritty",
-        "level": level,
-        "items": ["TODO: heroic/gritty logic not implemented"]
-    }
+CAMPAIGN_STYLES = [
+    "ancient_myth",
+    "classical_epic",
+    "northern_saga",
+    "chivalric_romance",
+    "arabian_adventure",
+    "high_fantasy",
+    "sword_and_sorcery",
+]
 
-# ============================================================
-# 1. Rarity → subtables mapping
-# ============================================================
-
-RARITY_TABLES = {
-    "Common": [
-        (1, 15, "Common Potions 1"),
-        (16, 30, "Common Potions 2"),
-        (31, 45, "Common Potions 3"),
-        (46, 90, "Common Scrolls"),
-        (91, 100, "Common Miscellaneous Items"),
+ARMOR_TYPES = {
+    "ancient_myth": [
+        (1, 1, "Padded"),
+        (2, 5, "Leather"),
+        (6, 7, "Light Arena"),
+        (8, 9, "Scale"),
+        (10, 11, "Laminated Linen"),
+        (12, 13, "Heavy Arena"),
+        (14, 16, "Banded Plate"),
+        (17, 20, "Lamellar"),
     ],
+    "classical_epic": [
+        (1, 1, "Hide and Fur"),
+        (2, 6, "Padded"),
+        (7, 9, "Ring"),
+        (10, 11, "Scale"),
+        (12, 16, "Chain Mail"),
+        (17, 20, "Plate"),
+    ],
+    "northern_saga": [
+        (1, 1, "Hide and Fur"),
+        (2, 5, "Padded"),
+        (6, 6, "Ring"),
+        (7, 13, "Scale"),
+        (14, 16, "Chain Mail"),
+        (17, 19, "Lamellar"),
+        (20, 20, "Plate"),
+    ],
+    "chivalric_romance": [
+        (1, 5, "Leather"),
+        (6, 6, "Light Arena"),
+        (7, 7, "Ring"),
+        (8, 12, "Chain Mail"),
+        (13, 13, "Heavy Arena"),
+        (14, 14, "Banded Plate"),
+        (15, 15, "Lamellar"),
+        (16, 20, "Plate"),
+    ],
+    "arabian_adventure": [
+        (1, 1, "Hide and Fur"),
+        (2, 2, "Padded"),
+        (3, 6, "Leather"),
+        (7, 9, "Ring"),
+        (10, 13, "Scale"),
+        (14, 16, "Chain Mail"),
+        (17, 19, "Lamellar"),
+        (20, 20, "Plate"),
+    ],
+    "high_fantasy": [
+        (1, 5, "Leather"),
+        (6, 6, "Ring"),
+        (7, 7, "Scale"),
+        (8, 12, "Chain Mail"),
+        (13, 13, "Banded Plate"),
+        (14, 14, "Lamellar"),
+        (15, 20, "Plate"),
+    ],
+    "sword_and_sorcery": [
+        (1, 5, "Leather"),
+        (6, 6, "Light Arena"),
+        (7, 7, "Ring"),
+        (8, 8, "Scale"),
+        (9, 12, "Chain Mail"),
+        (13, 13, "Heavy Arena"),
+        (14, 14, "Banded Plate"),
+        (15, 15, "Lamellar"),
+        (16, 20, "Plate"),
+    ],
+}
 
-    # kolejne rarity dodamy później:
-    # "Uncommon": [...],
-    # "Rare": [...],
-    # "Very Rare": [...],
-    # "Legendary": [...],
+AMMO_TYPES = {
+    "ancient_myth": [
+        (1, 16, "Arrow"),
+        (17, 20, "Sling Bullet"),
+    ],
+    "classical_epic": [
+        (1, 13, "Arrow"),
+        (14, 20, "Sling Bullet"),
+    ],
+    "northern_saga": [
+        (1, 17, "Arrow"),
+        (18, 20, "Sling Bullet"),
+    ],
+    "chivalric_romance": [
+        (1, 13, "Arrow"),
+        (14, 17, "Crossbow Bolt"),
+        (18, 20, "Sling Bullet"),
+    ],
+    "arabian_adventure": [
+        (1, 16, "Arrow"),
+        (17, 20, "Crossbow Bolt"),
+    ],
+    "high_fantasy": [
+        (1, 16, "Arrow"),
+        (17, 20, "Sling Bullet"),
+    ],
+    "sword_and_sorcery": [
+        (1, 13, "Arrow"),
+        (14, 17, "Crossbow Bolt"),
+        (18, 20, "Sling Bullet"),
+    ],
+}
+
+AXE_TYPES = {
+    "ancient_myth": [
+        (1, 10, "Battle Axe"),
+        (11, 20, "Hand Axe"),
+    ],
+    "classical_epic": [
+        (1, 10, "Battle Axe"),
+        (11, 15, "Great Axe"),
+        (16, 20, "Hand Axe"),
+    ],
+    "northern_saga": [
+        (1, 8, "Battle Axe"),
+        (9, 20, "Hand Axe"),
+    ],
+    "chivalric_romance": [
+        (1, 7, "Battle Axe"),
+        (8, 14, "Great Axe"),
+        (15, 20, "Hand Axe"),
+    ],
+    "arabian_adventure": [
+        (1, 7, "Battle Axe"),
+        (8, 14, "Great Axe"),
+        (15, 20, "Hand Axe"),
+    ],
+    "high_fantasy": [
+        (1, 10, "Battle Axe"),
+        (11, 16, "Great Axe"),
+        (17, 20, "Hand Axe"),
+    ],
+    "sword_and_sorcery": [
+        (1, 10, "Battle Axe"),
+        (11, 16, "Great Axe"),
+        (17, 20, "Hand Axe"),
+    ],
+}
+
+BLUDGEON_TYPES = {
+    "ancient_myth": [
+        (1, 7, "Club"),
+        (8, 20, "Mace"),
+    ],
+    "classical_epic": [
+        (1, 3, "Flail"),
+        (4, 7, "Mace"),
+        (8, 10, "Morning Star"),
+        (11, 20, "Warhammer"),
+    ],
+    "northern_saga": [
+        (1, 7, "Flail"),
+        (8, 14, "Mace"),
+        (15, 20, "Morning Star"),
+    ],
+    "chivalric_romance": [
+        (1, 1, "Club"),
+        (2, 5, "Flail"),
+        (6, 10, "Mace"),
+        (11, 15, "Morning Star"),
+        (16, 20, "Warhammer"),
+    ],
+    "arabian_adventure": [
+        # brak w tabeli Ancient/Arabian → używamy Classical/Epic/Northern analogii?
+        # TUTAJ: Arabian style = brak Club, brak Warhammer → bierzemy Classical/Epic hybrydę
+        (1, 8, "Flail"),
+        (9, 14, "Mace"),
+        (15, 20, "Morning Star"),
+    ],
+    "high_fantasy": [
+        (1, 8, "Flail"),
+        (9, 12, "Mace"),
+        (13, 16, "Morning Star"),
+        (17, 20, "Warhammer"),
+    ],
+    "sword_and_sorcery": [
+        (1, 1, "Club"),
+        (2, 5, "Flail"),
+        (6, 10, "Mace"),
+        (11, 15, "Morning Star"),
+        (16, 20, "Warhammer"),
+    ],
+}
+
+BOW_TYPES = {
+    "ancient_myth": [
+        (1, 12, "Bow, Composite"),
+        (13, 20, "Bow, Long"),
+    ],
+    "classical_epic": [
+        (1, 10, "Bow, Composite"),
+        (11, 17, "Bow, Short"),
+        (18, 20, "Crossbow"),
+    ],
+    "northern_saga": [
+        (1, 12, "Bow, Composite"),
+        (13, 20, "Bow, Short"),
+    ],
+    "chivalric_romance": [
+        (1, 4, "Arbalest"),
+        (5, 12, "Bow, Long"),
+        (13, 16, "Bow, Short"),
+        (17, 20, "Crossbow"),
+    ],
+    "arabian_adventure": [
+        (1, 12, "Bow, Composite"),
+        (13, 20, "Bow, Short"),
+    ],
+    "high_fantasy": [
+        (1, 8, "Bow, Composite"),
+        (9, 12, "Bow, Long"),
+        (13, 16, "Bow, Short"),
+        (17, 20, "Crossbow"),
+    ],
+    "sword_and_sorcery": [
+        (1, 2, "Arbalest"),
+        (3, 7, "Bow, Composite"),
+        (8, 12, "Bow, Long"),
+        (13, 16, "Bow, Short"),
+        (17, 20, "Crossbow"),
+    ],
+}
+
+SPEAR_TYPES = {
+    "ancient_myth": [
+        (1, 3, "Javelin"),
+        (4, 6, "Lance"),
+        (7, 12, "Pole Arm"),
+        (13, 20, "Spear"),
+    ],
+    "classical_epic": [
+        (1, 3, "Javelin"),
+        (4, 6, "Lance"),
+        (7, 10, "Pole Arm"),
+        (11, 20, "Spear"),
+    ],
+    "northern_saga": [
+        (1, 3, "Javelin"),
+        (4, 9, "Lance"),
+        (10, 12, "Pole Arm"),
+        (13, 20, "Spear"),
+    ],
+    "chivalric_romance": [
+        (1, 3, "Javelin"),
+        (4, 6, "Lance"),
+        (7, 10, "Pole Arm"),
+        (11, 20, "Spear"),
+    ],
+    "arabian_adventure": [
+        (1, 3, "Javelin"),
+        (4, 6, "Lance"),
+        (7, 10, "Pole Arm"),
+        (11, 20, "Spear"),
+    ],
+    "high_fantasy": [
+        (1, 3, "Javelin"),
+        (4, 6, "Lance"),
+        (7, 10, "Pole Arm"),
+        (11, 20, "Spear"),
+    ],
+    "sword_and_sorcery": [
+        (1, 3, "Javelin"),
+        (4, 6, "Lance"),
+        (7, 10, "Pole Arm"),
+        (11, 20, "Spear"),
+    ],
+}
+
+SWORD_TYPES = {
+    "ancient_myth": [
+        (1, 6, "Dagger"),
+        (7, 18, "Short Sword"),
+        (19, 20, "Sword"),
+    ],
+    "classical_epic": [
+        (1, 6, "Dagger"),
+        (7, 12, "Short Sword"),
+        (13, 18, "Sword"),
+        (19, 20, "Two-Handed Sword"),
+    ],
+    "northern_saga": [
+        (1, 6, "Dagger"),
+        (7, 12, "Short Sword"),
+        (13, 18, "Sword"),
+        (19, 20, "Two-Handed Sword"),
+    ],
+    "chivalric_romance": [
+        (1, 6, "Dagger"),
+        (7, 10, "Short Sword"),
+        (11, 16, "Sword"),
+        (17, 20, "Two-Handed Sword"),
+    ],
+    "arabian_adventure": [
+        (1, 6, "Dagger"),
+        (7, 12, "Short Sword"),
+        (13, 18, "Sword"),
+        (19, 20, "Two-Handed Sword"),
+    ],
+    "high_fantasy": [
+        (1, 4, "Dagger"),
+        (5, 10, "Short Sword"),
+        (11, 16, "Sword"),
+        (17, 20, "Two-Handed Sword"),
+    ],
+    "sword_and_sorcery": [
+        (1, 4, "Dagger"),
+        (5, 10, "Short Sword"),
+        (11, 16, "Sword"),
+        (17, 20, "Two-Handed Sword"),
+    ],
+}
+
+OTHER_WEAPON_TYPES = {
+    "ancient_myth": [
+        (1, 12, "Sling"),
+        (13, 18, "Staff"),
+        (19, 19, "Cestus"),
+        (20, 20, "Staff-Sling"),
+    ],
+    "classical_epic": [
+        (1, 3, "Net"),
+        (4, 11, "Sling"),
+        (12, 18, "Staff"),
+        (19, 19, "Cestus"),
+        (20, 20, "Staff-Sling"),
+    ],
+    "northern_saga": [
+        (1, 3, "Net"),
+        (4, 11, "Sling"),
+        (12, 18, "Staff"),
+        (19, 19, "Whip"),
+        (20, 20, "Staff-Sling"),
+    ],
+    "chivalric_romance": [
+        (1, 9, "Sling"),
+        (10, 18, "Staff"),
+        (19, 19, "Whip"),
+        (20, 20, "Staff-Sling"),
+    ],
+    "arabian_adventure": [
+        (1, 9, "Sling"),
+        (10, 18, "Staff"),
+        (19, 19, "Whip"),
+        (20, 20, "Staff-Sling"),
+    ],
+    "high_fantasy": [
+        (1, 14, "Sling"),
+        (15, 17, "Staff"),
+        (18, 18, "Whip"),
+        (19, 19, "Cestus"),
+        (20, 20, "Staff-Sling"),
+    ],
+    "sword_and_sorcery": [
+        (1, 1, "Bola"),
+        (2, 3, "Net"),
+        (4, 4, "Sap"),
+        (5, 14, "Sling"),
+        (15, 17, "Staff"),
+        (18, 18, "Whip"),
+        (19, 19, "Cestus"),
+        (20, 20, "Staff-Sling"),
+    ],
 }
 
 
-def roll_on_subtable(table):
-    """
-    Otrzymuje listę krotek (min_roll, max_roll, result)
-    Zwraca nazwę sub-tabeli, np. "Common Potions 2"
-    """
-    roll = random.randint(1, 100)
+
+def choose_from_table(table, roll=None):
+    if roll is None:
+        roll = random.randint(1, 100)
     for low, high, result in table:
         if low <= roll <= high:
             return result
-    # shouldn't happen:
-    return None
+    raise ValueError(f"Roll {roll} not in table ranges: {table}")
 
+def choose_from_d20(table, roll=None):
+    if roll is None:
+        roll = random.randint(1, 20)
+    for low, high, result in table:
+        if low <= roll <= high:
+            return result
+    raise ValueError(f"Roll {roll} not in table ranges: {table}")
 
-# ============================================================
-# 2. Główna funkcja: losowanie X przedmiotów danej rzadkości
-# ============================================================
+def get_creature_type():
+    result = choose_from_d20(CREATURE_TYPES)
+    if result == "ROLL_TWICE":
+        first = choose_from_d20(CREATURE_TYPES)
+        while first == "ROLL_TWICE":
+            first = choose_from_d20(CREATURE_TYPES)
 
-def roll_items_by_rarity(rarity: str, count: int):
-    rarity = rarity.capitalize()
+        second = choose_from_d20(CREATURE_TYPES)
+        while second == "ROLL_TWICE" or second == first:
+            second = choose_from_d20(CREATURE_TYPES)
 
-    if rarity not in RARITY_TABLES:
-        raise ValueError(f"Unknown rarity: {rarity}")
+        return [first, second]
+    return [result]
 
-    subtables = RARITY_TABLES[rarity]
+def get_misc_weapon_category():
+    return choose_from_d20(MISC_WEAPON_TYPES)
 
-    results = []
-    for _ in range(count):
-        sub = roll_on_subtable(subtables)
-        item = roll_magic_item_from_subtable(sub)
-        results.append(item)
-
-    return results
-
-# -----------------------------------------------------------
-# GŁÓWNA FUNKCJA API
-# -----------------------------------------------------------
-
-def roll_magic_items(mode: str, level: int):
-    """
-    Publiczny punkt wejścia:
-    run_generator() będzie to wywoływać dla postaci na wyższym poziomie.
-    """
-    logic_fn = get_item_generation_logic(mode)
-    return logic_fn(level)
-
-# ============================================================
-# Public API dla generatora postaci
-# ============================================================
-
-def roll_magic_items_heroic(level: int, rarity_counts: dict):
-    """
-    rarity_counts: np. {"Common": 3, "Uncommon": 1}
-    Zwraca słownik:
-    {
-        "Common": [ ... ],
-        "Uncommon": [ ... ]
-    }
-
-    Generator postaci może przekazać ile danego rarity otrzymuje NPC/postać.
-    """
-
-    output = {}
-
-    for rarity, count in rarity_counts.items():
-        output[rarity] = roll_items_by_rarity(rarity, count)
-
-    return output
-
-def roll_magic_item_from_subtable(name: str):
-    if name not in SUBTABLE_ROLLERS:
-        return {"subtable": name, "error": "No implementation yet"}
-    return SUBTABLE_ROLLERS[name]()
