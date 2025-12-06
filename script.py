@@ -180,23 +180,42 @@ def run_generator(final_class, level):
     # GENEROWANIE POSTACI
     # -----------------------
 
-    def roll_and_drop(num_dice, drop_lowest):
-        rolls = sorted([random.randint(1, 6) for _ in range(num_dice)])
-        return sum(rolls[drop_lowest:])  # drop najniższe
+    def roll_and_drop(dice, drop):
+        rolls = [random.randint(1, 6) for _ in range(dice)]
+        rolls.sort(reverse=True)
+        return sum(rolls[:-drop])
 
     def generate_attributes():
         results = []
-        results.append(roll_and_drop(5, 2))  # 5d6 drop 2
-        results.append(roll_and_drop(4, 1))  # 4d6 drop 1
-        results.append(roll_and_drop(4, 1))  # 4d6 drop 1
-        results.append(sum(random.randint(1, 6) for _ in range(3)))  # 3d6
-        results.append(sum(random.randint(1, 6) for _ in range(3)))  # 3d6
-        results.append(sum(random.randint(1, 6) for _ in range(3)))  # 3d6
+
+        # 5d6 drop 2 → minimum 13
+        r1 = roll_and_drop(5, 2)
+        if r1 < 13:
+            r1 = 13
+        results.append(r1)
+
+        # 4d6 drop 1 → minimum 9
+        r2 = roll_and_drop(4, 1)
+        if r2 < 9:
+            r2 = 9
+        results.append(r2)
+
+        # drugie 4d6 drop 1 → również minimum 9
+        r3 = roll_and_drop(4, 1)
+        if r3 < 9:
+            r3 = 9
+        results.append(r3)
+
+        # pozostałe 3 staty to zwykłe 3d6
+        results.append(sum(random.randint(1, 6) for _ in range(3)))
+        results.append(sum(random.randint(1, 6) for _ in range(3)))
+        results.append(sum(random.randint(1, 6) for _ in range(3)))
 
         stats_order = ["STR", "DEX", "CON", "INT", "WIL", "CHA"]
         random.shuffle(results)
         return dict(zip(stats_order, results))
 
+    # przykład
     stats = generate_attributes()
 
 
