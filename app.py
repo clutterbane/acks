@@ -23,10 +23,12 @@ if mode == "NPC Generator":
 
     final_class = st.selectbox("Choose class", ["Random"] + sorted(ALL_CLASSES))
     level = st.number_input("Choose level:", min_value=1, max_value=14, value=1)
+    mode = "heroic"   # NPC zawsze używa heroic/gritty table
+    style = st.selectbox("Campaign style (for magic items generation):", ["ancient_myth", "classical_epic", "northern_saga", "chivalric_romance", "arabian_adventure", "high_fantasy", "sword_and_sorcery"], index=0)
 
     if st.button("Generate NPC"):
         st.write("🔍 Executing run_generator...")
-        result = run_generator(final_class, level)
+        result = run_generator(final_class, level, mode=mode, style=style)
         st.write("✔ run_generator works")
         st.text_area("Result:", result, height=800)
 

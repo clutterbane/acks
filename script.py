@@ -1,4 +1,6 @@
 import random
+from npc_magic_items import generate_magic_items_for_level
+
 
 ALL_CLASSES = {
         "Mage", "Thief", "Crusader", "Fighter", "Explorer", "Venturer",
@@ -155,7 +157,7 @@ def choose_warlock_path():
     """Losuje ścieżkę Warlocka."""
     return random.choice(list(warlock_paths.keys()))
 
-def run_generator(final_class, level):
+def run_generator(final_class, level, mode="heroic", style="ancient_myth"):
     import io
     out = io.StringIO()
 
@@ -217,6 +219,11 @@ def run_generator(final_class, level):
 
     # przykład
     stats = generate_attributes()
+
+    # --------------------------------------------
+    # MAGICZNE PRZEDMIOTY (ACKS NPC WEALTH TABLE)
+    # --------------------------------------------
+    magic_items = generate_magic_items_for_level(level, "heroic", style)
 
 
     # MAKSYMALNE POZIOMY KLAS
@@ -3653,5 +3660,15 @@ def run_generator(final_class, level):
         p(f"\nClass Template roll (3d6): {class_template_value}")
         p(f"Gold Pieces option (3d6 * 10): {gold_pieces_value} gp")
         p("Player chooses one of the above options.")
+
+    p("\n--- MAGICAL ITEMS ---")
+
+    if not magic_items:
+        p("None")
+    else:
+        for item in magic_items:
+            rarity = item["rarity"].replace("_", " ").title()
+            name = item["name"]
+            p(f"{rarity}: {name}")
 
     return out.getvalue()
