@@ -94,13 +94,14 @@ def generate_item(mode: str, campaign_style: str, rarity: str | None = None):
     # CLASSIC → Rzadkość ignorowana
     # -----------------------------
     if mode == "classic":
-        if rarity is not None:
-            print("Warning: Classic mode ignores rarity parameter.")
-        item = generate_item_classic(campaign_style)
+        # rarity IGNORE
+        chosen_type = rarity if rarity else "random"
+        # używamy parametru rarity jako "selected type"
+        item = generate_classic_item(campaign_style, chosen_type)
         return {
             "mode": mode,
             "style": campaign_style,
-            "rarity": None,
+            "rarity": chosen_type,
             "item": item,
         }
 
@@ -131,28 +132,72 @@ def generate_item(mode: str, campaign_style: str, rarity: str | None = None):
 # GENERATORY DLA TRYBÓW
 # =====================================================================
 
-def generate_item_classic(style: str):
-    roll = random.randint(1, 100)
+CLASSIC_TYPES = [
+    "random",
+    "potions",
+    "rings",
+    "scrolls",
+    "implements",
+    "misc_items",
+    "swords",
+    "misc_weapons",
+    "armor",
+]
 
-    if 1 <= roll <= 20:
-        item = _classic_potions(style)
-    elif 21 <= roll <= 25:
-        item = _classic_rings(style)
-    elif 26 <= roll <= 56:
-        item = _classic_scrolls(style)
-    elif 57 <= roll <= 61:
-        item = _classic_implements(style)
-    elif 62 <= roll <= 66:
-        item = _classic_misc_items(style)
-    elif 67 <= roll <= 87:
-        item = _classic_swords(style)
-    elif 88 <= roll <= 92:
-        item = _classic_misc_weapons(style)
-    elif 93 <= roll <= 100:
-        item = _classic_armors(style)
-    else:
-        raise RuntimeError("Random Magic Item Type roll out of range.")
+def generate_classic_item(style: str, chosen_type: str):
+    """
+    Classic mode generator with two modes:
+    - chosen_type = "random" → uses Random Magic Item Type table
+    - chosen_type = specific type → uses corresponding classic subtable
+    """
 
+    chosen_type = chosen_type.lower()
+
+    if chosen_type not in CLASSIC_TYPES:
+        raise ValueError(f"Unknown classic type '{chosen_type}'. Must be one of: {CLASSIC_TYPES}")
+
+    # -------------------------------------------------------------
+    # 1) RANDOM → use standard Classic d100 table
+    # -------------------------------------------------------------
+    if chosen_type == "random":
+        roll = random.randint(1, 100)
+
+        if 1 <= roll <= 20:
+            item = _classic_potions(style)
+        elif 21 <= roll <= 25:
+            item = _classic_rings(style)
+        elif 26 <= roll <= 56:
+            item = _classic_scrolls(style)
+        elif 57 <= roll <= 61:
+            item = _classic_implements(style)
+        elif 62 <= roll <= 66:
+            item = _classic_misc_items(style)
+        elif 67 <= roll <= 87:
+            item = _classic_swords(style)
+        elif 88 <= roll <= 92:
+            item = _classic_misc_weapons(style)
+        elif 93 <= roll <= 100:
+            item = _classic_armors(style)
+        else:
+            raise RuntimeError("Random Magic Item Type roll out of range.")
+
+        return _finalize_item_subtype(item, style)
+
+    # -------------------------------------------------------------
+    # 2) Direct selection → bypass random d100
+    # -------------------------------------------------------------
+    lookup = {
+        "potions": _classic_potions,
+        "rings": _classic_rings,
+        "scrolls": _classic_scrolls,
+        "implements": _classic_implements,
+        "misc_items": _classic_misc_items,
+        "swords": _classic_swords,
+        "misc_weapons": _classic_misc_weapons,
+        "armor": _classic_armors,
+    }
+
+    item = lookup[chosen_type](style)
     return _finalize_item_subtype(item, style)
 
 

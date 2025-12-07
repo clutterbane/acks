@@ -50,6 +50,25 @@ elif mode == "Treasure Tome Magic Items":
             ["common", "uncommon", "rare", "very_rare", "legendary"]
         )
 
+    # -------------------------
+    # CLASSIC → choose item type
+    # -------------------------
+    if mode_choice == "classic":
+        rarity = st.selectbox(
+            "Magic item type:",
+            [
+                "random",
+                "potions",
+                "rings",
+                "scrolls",
+                "implements",
+                "misc_items",
+                "swords",
+                "misc_weapons",
+                "armor"
+            ]
+        )
+
     style = st.selectbox(
         "Campaign style:",
         [
