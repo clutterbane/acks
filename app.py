@@ -10,14 +10,14 @@ st.sidebar.title("Options")
 
 mode = st.sidebar.selectbox(
     "Generator selector",
-    ["NPC Generator", "Treasure Tome Magic Items"]
+    ["Leveled Character Generator", "Treasure Tome Magic Item Generator"]
 )
 
 st.title("ACKS Generators")
 
-if mode == "NPC Generator":
+if mode == "Leveled Character Generator":
 
-    st.header("ACKS NPC Generator")
+    st.header("Leveled Character Generator")
 
     class_list = sorted(ALL_CLASSES)
 
@@ -34,9 +34,9 @@ if mode == "NPC Generator":
 
 # MAGIC ITEM
 
-elif mode == "Treasure Tome Magic Items":
+elif mode == "Treasure Tome Magic Item Generator":
 
-    st.header("Treasure Tome Magic Items")
+    st.header("Treasure Tome Magic Item Generator")
 
     mode_choice = st.selectbox(
         "Campaign type:",
