@@ -1,7 +1,7 @@
 import streamlit as st
-from script import run_generator, ALL_CLASSES   # ← IMPORTUJESZ NORMALNIE
+from character_generator import run_generator, ALL_CLASSES   # ← IMPORTUJESZ NORMALNIE
 from item_generator import generate_item
-
+from zero_level_generator import generate_zero_level_character, OCCUPATIONS
 
 st.set_page_config(page_title="ACKS Generators", layout="wide")
 
@@ -10,7 +10,10 @@ st.sidebar.title("Options")
 
 mode = st.sidebar.selectbox(
     "Generator selector",
-    ["Leveled Character Generator", "Treasure Tome Magic Item Generator"]
+    [
+        "Leveled Character Generator",
+        "Zero-Level Character Generator",
+        "Treasure Tome Magic Item Generator"]
 )
 
 st.title("ACKS Generators")
@@ -85,3 +88,101 @@ elif mode == "Treasure Tome Magic Item Generator":
         item = generate_item(mode_choice, style, rarity)
         st.subheader("Result:")
         st.json(item)
+
+# ============================================================
+# ZERO-LEVEL CHARACTER GENERATOR
+# ============================================================
+
+elif mode == "Zero-Level Character Generator":
+
+    st.header("Zero-Level Character Generator")
+
+    # --- Race selection ---
+    race_choice = st.selectbox(
+        "Choose race:",
+        ["Random", "Human", "Dwarf", "Elf"]
+    )
+    race_override = None if race_choice == "Random" else race_choice
+
+    # --- Generation mode ---
+    gen_mode = st.selectbox(
+        "Generation mode:",
+        [
+            "Random Proficiencies",
+            "Choose Category",
+            "Choose Specific Occupation"
+        ]
+    )
+
+    chosen_category = None
+    chosen_occupation = None
+
+    if gen_mode == "Choose Category":
+        chosen_category = st.selectbox("Select category:", list(OCCUPATIONS.keys()))
+
+    elif gen_mode == "Choose Specific Occupation":
+        chosen_category = st.selectbox("Select category:", list(OCCUPATIONS.keys()))
+        occ_names = [o["name"] for o in OCCUPATIONS[chosen_category]]
+        chosen_name = st.selectbox("Select occupation:", occ_names)
+
+        for occ in OCCUPATIONS[chosen_category]:
+            if occ["name"] == chosen_name:
+                chosen_occupation = occ
+                break
+
+    if st.button("Generate Zero-Level Character"):
+
+        if gen_mode == "Random Proficiencies":
+            result = generate_zero_level_character(
+                mode="random_proficiencies",
+                race_override=race_override
+            )
+
+        elif gen_mode == "Choose Category":
+            result = generate_zero_level_character(
+                mode="category",
+                chosen_category=chosen_category,
+                race_override=race_override
+            )
+
+        elif gen_mode == "Choose Specific Occupation":
+            result = generate_zero_level_character(
+                mode="occupation",
+                chosen_occupation=chosen_occupation,
+                race_override=race_override
+            )
+
+        st.subheader("Result")
+
+
+        # ---- FORMATTER ----
+        def format_zero_level_output(result):
+            stats = result["stats"]
+            features = result["features"]
+            profs = result["proficiencies"]
+
+            text = []
+            text.append("--- RACE AND OCCUPATION---")
+            text.append(f"Race: {result['race']}")
+            text.append(f"Occupation: {result['occupation'] or 'None'}")
+            text.append(f"Alignment: {result['alignment']}")
+
+            text.append("\n--- HIT POINTS ---")
+            text.append(f"Final HP: {result['hp']}")
+
+            text.append("\n--- ATTRIBUTES ---")
+            for key in ["STR", "DEX", "CON", "INT", "WIS", "CHA"]:
+                text.append(f"{key}: {stats[key]}")
+
+            text.append("\n--- PHYSICAL FEATURES ---")
+            for feat in features:
+                text.append(f" - {feat}")
+
+            text.append("\n--- PROFICIENCIES ---")
+            for p in profs:
+                text.append(f" - {p}")
+
+            return "\n".join(text)
+
+
+        st.text_area("Generated Character:", format_zero_level_output(result), height=600)
