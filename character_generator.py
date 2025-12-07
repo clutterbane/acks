@@ -2215,40 +2215,10 @@ def run_generator(final_class, level, mode="heroic", style="ancient_myth"):
     if final_class == "Witch":
         p(f"Witch Tradition: {witch_tradition}")
 
-    p("\n--- PRIME REQUISITES ---")
-    p(prime_requisites[final_class])
-
-    p("\n--- EXTRA REQUIREMENTS ---")
-    if final_class == "Nobiran Wonderworker":
-        p("All abilities must be at least 11")
-    elif final_class in ("Dwarven Craftpriest", "Dwarven Vaultguard"):
-        p("CON must be at least 9")
-    elif final_class == "Zaharan Ruinguard":
-        p("INT, WIL, CHA must be at least 9")
-    else:
-        p("None")
-
     total_hp, hp_gains, roll_log, con_log, bonus_log = calculate_hp_progression_table(final_class, stats["CON"], level)
 
     p("\n--- HIT POINTS ---")
     p(f"Final HP: {total_hp}")
-    p("HP by level:")
-
-    running = 0
-    for lvl in range(1, level + 1):
-        gain = hp_gains[lvl - 1]
-        roll_sum = roll_log[lvl - 1]
-        con_total = con_log[lvl - 1]
-        bonus = bonus_log[lvl - 1]
-        running += gain
-
-        if lvl <= 9:
-            # np. „Level 2: rolls 5 (2d4) + CON(+4) = +9 → 15 total”
-            p(f" Level {lvl}: rolls {roll_sum} + CON total({con_total:+d})"
-                  f"{' + bonus ' + str(bonus) if bonus else ''} = +{gain} → {running} total")
-        else:
-            p(f" Level {lvl}: rolls {roll_sum} + CON total({con_total:+d})"
-                  f" + bonus {bonus} = +{gain} → {running} total")
 
     p("\n--- ATTRIBUTES ---")
     for k, v in stats.items():

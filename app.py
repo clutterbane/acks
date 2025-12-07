@@ -2,6 +2,8 @@ import streamlit as st
 from character_generator import run_generator, ALL_CLASSES   # ← IMPORTUJESZ NORMALNIE
 from item_generator import generate_item
 from zero_level_generator import generate_zero_level_character, OCCUPATIONS
+from rival_adventuring_parties import generate_rival_party, format_rival_party
+
 
 st.set_page_config(page_title="ACKS Generators", layout="wide")
 
@@ -13,6 +15,7 @@ mode = st.sidebar.selectbox(
     [
         "Leveled Character Generator",
         "Zero-Level Character Generator",
+        "Rival Adventuring Party Generator",
         "Treasure Tome Magic Item Generator"]
 )
 
@@ -186,3 +189,33 @@ elif mode == "Zero-Level Character Generator":
 
 
         st.text_area("Generated Character:", format_zero_level_output(result), height=600)
+
+# RIVAL ADVENTURING PARTIES
+
+elif mode == "Rival Adventuring Party Generator":
+
+    st.header("Rival Adventuring Party Generator")
+
+    location = st.selectbox("Encounter location:", ["dungeon", "wilderness", "settlement"])
+
+    dungeon_level = None
+    wilderness_max = None
+    settlement_class = None
+
+    if location == "dungeon":
+        dungeon_level = st.number_input("Dungeon depth:", min_value=1, max_value=20, value=1)
+
+    elif location == "wilderness":
+        wilderness_max = st.number_input("Max dungeon level nearby:", min_value=1, max_value=20, value=1)
+
+    elif location == "settlement":
+        settlement_class = st.number_input("Settlement market class (1–6):", min_value=1, max_value=6, value=4)
+
+    if st.button("Generate Rival Party"):
+        party = generate_rival_party(
+            location,
+            dungeon_level=dungeon_level,
+            wilderness_max=wilderness_max,
+            settlement_class=settlement_class
+        )
+        st.text_area("Result:", format_rival_party(party), height=900)
