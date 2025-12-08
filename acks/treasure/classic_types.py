@@ -42,7 +42,18 @@ SPECIAL_MAP_GEMLIKE = {
 # HELPERS WITH AUDIT SUPPORT
 # ============================================================
 
-def _roll_with_audit(expr, audit, label=""):
+def _roll_with_audit(expr, audit, label):
+    audit(f"Rolling {label}: {expr}")
+
+    # --- FIX: allow integers as qty ---
+    if isinstance(expr, int):
+        return expr
+
+    # --- FIX: allow missing / None qty (defaults to 1) ---
+    if expr is None:
+        return 1
+
+    # --- must be string at this point ---
     value = roll(expr, audit=audit, note=label)
     return value
 
