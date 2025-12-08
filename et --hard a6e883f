@@ -1,0 +1,20 @@
+[33mb604c1d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m HEAD@{0}: reset: moving to HEAD~1
+[33ma6e883f[m[33m ([m[1;31morigin/master[m[33m)[m HEAD@{1}: commit: update
+[33mb604c1d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m HEAD@{2}: commit: update
+[33m0630cb2[m HEAD@{3}: commit: update
+[33md4ce944[m HEAD@{4}: commit: update
+[33m1e8ba78[m HEAD@{5}: commit: update
+[33mbc416dd[m HEAD@{6}: commit: update
+[33m056f59d[m HEAD@{7}: commit: update
+[33m0f54c79[m HEAD@{8}: commit: update
+[33me0acb7f[m HEAD@{9}: commit: update
+[33mc91d175[m HEAD@{10}: commit: update
+[33m51d5698[m HEAD@{11}: commit: update
+[33mdf34a9b[m HEAD@{12}: commit: language
+[33m142ee2e[m HEAD@{13}: commit: language
+[33mda46e30[m HEAD@{14}: commit: witch and warlock subclasses features added
+[33mc9d48dd[m HEAD@{15}: commit: test
+[33mcf48529[m HEAD@{16}: Branch: renamed refs/heads/master to refs/heads/main
+[33mcf48529[m HEAD@{18}: commit: test
+[33m3a8e179[m HEAD@{19}: commit: test
+[33m06cc5d3[m HEAD@{20}: commit (initial): test
