@@ -6,6 +6,7 @@ from rival_adventuring_parties import generate_rival_party, format_rival_party
 from terrains import TERRAINS, normalize_terrain, terrain_id
 from lairs_per_hex import LAIRS_PER_HEX, generate_lairs_for_hex
 from treasure.classic_types import generate_classic_treasure
+from treasure.utils import COIN_GP
 
 st.set_page_config(page_title="ACKS Generators", layout="wide")
 
@@ -366,6 +367,38 @@ elif mode == "Classic Treasure Generator":
             })
 
         # ============================================================
+        # GROUP DUPLICATES (AGGREGATION)
+        # ============================================================
+
+        aggregated = {}
+
+        for it in final_items:
+            if isinstance(it, str):
+                key = ("__STRING__", it)
+                name = it
+                gp = 0
+                stn = 0
+            else:
+                name = it.get("name", "Unknown Item")
+                gp = it.get("value_gp", 0)
+                stn = it.get("stone", 0)
+                key = (name, gp, stn)
+
+            if key not in aggregated:
+                aggregated[key] = {
+                    "name": name,
+                    "value_gp": gp,
+                    "stone": stn,
+                    "count": 1
+                }
+            else:
+                aggregated[key]["count"] += 1
+
+        # Replace final_items with aggregated list
+        final_items = list(aggregated.values())
+
+
+        # ============================================================
         # RENDERER — każdy item osobno, brak ×2 agregacji
         # ============================================================
 
@@ -406,13 +439,32 @@ elif mode == "Classic Treasure Generator":
 
             # ---------------------------
             # RENDER
-            # ---------------------------
-            if stn is not None:
-                st.write(f"- {name}, {gp} gp, {stn:.1f} st")
-            elif gp is not None:
-                st.write(f"- {name}, {gp} gp")
+
+
+            # Czy to jest moneta? (special_coins lub zwykłe coins)
+            if "pieces" in name.lower() and gp is not None:
+                # Wyciągamy typ monety z nazwy
+                coin_type = name.split()[0].lower()  # Gold pieces → "gold"
+
+                # Wyliczamy liczbę fizycznych monet
+                if coin_type in COIN_GP and COIN_GP[coin_type] > 0:
+                    amount = int(gp / COIN_GP[coin_type])
+                    name = f"{name} ({amount})"
+
+            # Render normalny
+            count = it.get("count", 1)
+
+            if count > 1:
+                # multiple copies
+                st.write(f"- {name} × {count}, {gp * count} gp, {stn * count:.1f} st")
             else:
-                st.write(f"- {name}")
+                # single item
+                if stn is not None:
+                    st.write(f"- {name}, {gp} gp, {stn:.1f} st")
+                elif gp is not None:
+                    st.write(f"- {name}, {gp} gp")
+                else:
+                    st.write(f"- {name}")
 
         # ============================================================
         # 4. AUDIT TRAIL (debug / inspection)

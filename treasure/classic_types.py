@@ -410,9 +410,9 @@ CLASSIC_TREASURE = {
                 "categories": [
                     "swords",
                     "armor",
-                    "misc_weapons",
+                    "misc_weapon",
                     "implements",
-                    "misc_items",
+                    "misc_item",
                     "rings"
                 ]
             }
@@ -424,9 +424,9 @@ CLASSIC_TREASURE = {
 BROAD_MAP = {
     "swords": "sword",
     "armor": "armor",
-    "misc_weapons": "misc_weapon",
+    "misc_weapon": "misc_weapon",
     "implements": "implement",
-    "misc_items": "misc_item",
+    "misc_item": "misc_item",
     "rings": "ring",
 }
 
