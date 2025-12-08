@@ -7,6 +7,8 @@ from terrains import TERRAINS, normalize_terrain, terrain_id
 from lairs_per_hex import LAIRS_PER_HEX, generate_lairs_for_hex
 from acks.treasure.classic_types import generate_classic_treasure
 from acks.treasure.utils import COIN_GP
+from dragon.builder import build_dragon
+from dragon.data import HABITATS, BODY_FORMS, AGE_DATA
 
 st.set_page_config(page_title="ACKS Generators", layout="wide")
 
@@ -21,7 +23,8 @@ mode = st.sidebar.selectbox(
         "Rival Adventuring Party Generator",
         "Treasure Tome Magic Item Generator",
         "Classic Treasure Generator",
-        "Hex Lairs Generator"]
+        "Hex Lairs Generator",
+        "Dragon Builder"]
 )
 
 st.title("ACKS Generators")
@@ -487,3 +490,69 @@ elif mode == "Classic Treasure Generator":
                 st.write(f"- {item.get('name', 'Unknown Item')}")
         else:
             st.write("_None_")
+
+        # ============================================================
+        # DRAGON BUILDER
+        # ============================================================
+
+elif mode == "Dragon Builder":
+
+    st.header("Dragon Builder (ACKS)")
+
+    habitat = st.selectbox("Habitat (Dragon Type)", list(HABITATS.keys()))
+    body_form = st.selectbox("Body Form", list(BODY_FORMS.keys()))
+    age = st.selectbox("Age Category", list(AGE_DATA.keys()))
+
+    real_age = st.number_input("Real age in years (optional):", min_value=0, value=0)
+    breath_mode = st.selectbox("Breath Mode", ["limited", "recharging"])
+
+    # --- SPECIAL MODE ---
+    special_mode = st.radio("Special Abilities:", ["Random", "Manual Selection"])
+
+    selected_specials = []
+
+    if special_mode == "Manual Selection":
+        st.subheader("Choose Special Abilities (filtered automatically)")
+
+        # IMPORTS THAT MUST EXIST HERE
+        from dragon.builder import filter_abilities
+        from dragon.data import SPECIAL_ABILITIES
+
+        # Temporary dragon preview to check requirements
+        d_preview = build_dragon(
+            habitat, body_form, age,
+            real_age_years=real_age if real_age > 0 else None,
+            breath_mode=breath_mode,
+            random_specials=False
+        )
+
+        allowed = filter_abilities(d_preview, SPECIAL_ABILITIES)
+
+        selected_specials = st.multiselect(
+            "Available abilities:",
+            sorted(allowed)
+        )
+
+    if st.button("Generate Dragon"):
+
+        from dragon.models import Dragon
+
+        dragon = build_dragon(
+            habitat,
+            body_form,
+            age,
+            real_age_years=real_age if real_age > 0 else None,
+            breath_mode=breath_mode,
+            random_specials=(special_mode == "Random"),
+        )
+
+        if special_mode == "Manual Selection":
+            dragon["special_abilities_list"] = selected_specials
+
+        d = Dragon(dragon)
+
+        st.subheader("Dragon Statblock")
+        st.markdown(f"```\n{d.statblock()}\n```")
+
+        st.subheader("Raw Data (Debug)")
+        st.json(dragon)
