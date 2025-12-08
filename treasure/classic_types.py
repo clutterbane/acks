@@ -1,5 +1,4 @@
 import random
-from item_generator import generate_item
 from treasure.roller import roll, chance
 from treasure.gems import generate_ornamental, generate_gem, generate_brilliant
 from treasure.jewelry import generate_trinket, generate_jewelry, generate_regalia
@@ -10,8 +9,13 @@ from treasure.special.special_treasure import (
     special_from_brilliant, special_from_trinket,
     special_from_jewelry, special_from_regalia
 )
-from treasure.utils import coin_gp_value, coin_weight_st
+from treasure.utils import coin_gp_value
 
+from treasure.item_generator import (
+    generate_magic_by_category,
+    _finalize_item_subtype,
+    generate_item,   # jeśli nadal potrzebny
+)
 
 # ============================================================
 # SPECIAL MAPS

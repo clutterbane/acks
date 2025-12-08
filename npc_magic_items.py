@@ -1,6 +1,6 @@
 import random
 import re
-from item_generator import generate_item
+from treasure.item_generator import generate_item
 
 # ===========================================
 # MAGIC ITEM TABLE (ACKS NPC WEALTH)
