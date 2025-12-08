@@ -41,27 +41,16 @@ SPECIAL_MAP_GEMLIKE = {
 # HELPERS WITH AUDIT SUPPORT
 # ============================================================
 
-def _roll_with_audit(expr, audit, label=""):
-    """
-    Bezpieczny wrapper na roll():
-    - int  → zwraca wartość bez rzutu
-    - None → traktujemy jako 1 (np. domyślna ilość)
-    - str  → przekazujemy do roll("XdY")
-    """
-    audit(f"Rolling {label}: {expr}")
-
-    # brak wartości → domyślnie 1
+def _roll_with_audit(expr, audit, label):
     if expr is None:
-        return 1
+        return 0
+    if isinstance(expr, int):
+        return expr  # np. qty = 1
 
-    # liczba → zwracamy od razu
-    if isinstance(expr, (int, float)):
-        return int(expr)
+    if not isinstance(expr, str) or "d" not in expr:
+        raise ValueError(f"Invalid dice expression for {label}: {expr}")
 
-    # na wszelki wypadek rzutujemy na str
-    dice_expr = str(expr)
-    value = roll(dice_expr, audit=audit, note=label)
-    return value
+    return roll(expr, audit=audit, note=label)
 
 
 def _chance_with_audit(pct, audit, label=""):
@@ -648,10 +637,15 @@ def _generate_magic_items_from_entry(magic_entry: dict, campaign_style: str, aud
     results = []
 
     # --------------------------------------------------
-    # SIMPLE FORMAT:
-    # { "chance": X, "qty": Y, "table": "any"/"potion"/"scroll"/... }
+    # SIMPLE FORMAT ONLY if magic_entry itself contains
+    # chance + qty + table  (not nested entries!)
     # --------------------------------------------------
-    if "chance" in magic_entry and "qty" in magic_entry:
+    if (
+        isinstance(magic_entry, dict)
+        and "chance" in magic_entry
+        and "qty" in magic_entry
+        and "table" in magic_entry      # ← KLUCZOWA ZMIANA: wymagamy table
+    ):
         if _chance_with_audit(magic_entry["chance"], audit, "Magic items?"):
             qty = _roll_with_audit(magic_entry["qty"], audit, "Magic qty")
             audit(f" → Generating {qty} magic items")
@@ -666,17 +660,17 @@ def _generate_magic_items_from_entry(magic_entry: dict, campaign_style: str, aud
         return results
 
     # --------------------------------------------------
-    # COMPLEX FORMAT:
-    # klucze: weapon_armor, potion, scroll, any, broad, itp.
+    # COMPLEX FORMAT (nested keys)
+    # weapon_armor, potion, scroll, any, broad, etc.
     # --------------------------------------------------
     for key, spec in magic_entry.items():
 
         # -------------------------
-        # weapon_armor (szansa + qty)
+        # weapon_armor
         # -------------------------
         if key == "weapon_armor":
-            if _chance_with_audit(spec["chance"], audit, "weapon_armor?"):
-                qty = _roll_with_audit(spec["qty"], audit, "weapon_armor qty")
+            if _chance_with_audit(spec.get("chance", 0), audit, "weapon_armor?"):
+                qty = _roll_with_audit(spec.get("qty"), audit, "weapon_armor qty")
                 for _ in range(qty):
                     category = random.choice(WEAPON_ARMOR_TABLE)
                     audit(f" → Chose magic category: {category}")
@@ -684,31 +678,31 @@ def _generate_magic_items_from_entry(magic_entry: dict, campaign_style: str, aud
             continue
 
         # -------------------------
-        # any (szansa + qty, losowanie z ANY_TABLE)
+        # any-table (your custom E/G/J/L/O format)
         # -------------------------
-        if key == "any" and "chance" in spec:
-            if _chance_with_audit(spec["chance"], audit, "any-table?"):
-                qty = _roll_with_audit(spec["qty"], audit, "any qty")
+        if key == "any":
+            if _chance_with_audit(spec.get("chance", 0), audit, "any-table?"):
+                qty = _roll_with_audit(spec.get("qty"), audit, "any qty")
                 for _ in range(qty):
-                    category = random.choice(ANY_TABLE)
+                    category = random.choice(ANY_TABLE)   # ← proper random ANY
                     audit(f" → Chose magic category: {category}")
                     results.append(_gen_magic_item(category, campaign_style, audit))
             continue
 
         # -------------------------
-        # ALWAYS potion/scroll (Q, R) – tylko "qty", bez "chance"
+        # ALWAYS potion/scroll (Q, R)
         # -------------------------
-        if key in ("potion", "scroll") and "qty" in spec and "chance" not in spec:
-            qty = _roll_with_audit(spec["qty"], audit, f"{key} qty (always)")
+        if key in ("potion", "scroll") and "chance" not in spec:
+            qty = _roll_with_audit(spec.get("qty"), audit, f"{key} qty (always)")
             for _ in range(qty):
                 audit(f" → Chose magic category: {key}")
                 results.append(_gen_magic_item(key, campaign_style, audit))
             continue
 
         # -------------------------
-        # potion/scroll z szansą (E, H, N, O, itd.)
+        # potion/scroll with chance (E, H, N, O)
         # -------------------------
-        if key in ("potion", "scroll") and "qty" in spec and "chance" in spec:
+        if key in ("potion", "scroll") and "chance" in spec:
             if _chance_with_audit(spec["chance"], audit, f"{key}?"):
                 qty = _roll_with_audit(spec["qty"], audit, f"{key} qty")
                 for _ in range(qty):
@@ -717,11 +711,11 @@ def _generate_magic_items_from_entry(magic_entry: dict, campaign_style: str, aud
             continue
 
         # -------------------------
-        # broad – wybór szerokiej kategorii (R)
+        # broad (R)
         # -------------------------
         if key == "broad":
-            if _chance_with_audit(spec["chance"], audit, "broad?"):
-                qty = _roll_with_audit(spec["qty"], audit, "broad qty")
+            if _chance_with_audit(spec.get("chance", 0), audit, "broad?"):
+                qty = _roll_with_audit(spec.get("qty"), audit, "broad qty")
                 for _ in range(qty):
                     raw = random.choice(spec["categories"])
                     category = BROAD_MAP[raw]
@@ -730,12 +724,14 @@ def _generate_magic_items_from_entry(magic_entry: dict, campaign_style: str, aud
             continue
 
         # -------------------------
-        # default (np. inne klucze z szansą + qty)
+        # fallback for any nested:
+        # e.g. weapon, wand, ring, etc.
         # -------------------------
         if "chance" in spec and "qty" in spec:
             if _chance_with_audit(spec["chance"], audit, f"{key}?"):
                 qty = _roll_with_audit(spec["qty"], audit, f"{key} qty")
                 for _ in range(qty):
+                    audit(f" → Chose magic category: {key}")
                     results.append(_gen_magic_item(key, campaign_style, audit))
             continue
 
