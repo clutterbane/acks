@@ -1,21 +1,3 @@
-import random
-from treasure.roller import roll, chance
-from treasure.gems import generate_ornamental, generate_gem, generate_brilliant
-from treasure.jewelry import generate_trinket, generate_jewelry, generate_regalia
-from treasure.special.special_treasure import (
-    special_from_cp, special_from_sp, special_from_ep,
-    special_from_gp, special_from_pp,
-    special_from_ornamental, special_from_gem,
-    special_from_brilliant, special_from_trinket,
-    special_from_jewelry, special_from_regalia
-)
-from treasure.utils import coin_gp_value
-
-from treasure.item_generator import (
-    generate_magic_by_category,
-    _finalize_item_subtype,
-    generate_item,   # jeśli nadal potrzebny
-)
 
 # ============================================================
 # SPECIAL MAPS
@@ -45,17 +27,20 @@ SPECIAL_MAP_GEMLIKE = {
 def _roll_with_audit(expr, audit, label):
     audit(f"Rolling {label}: {expr}")
 
-    # --- FIX: allow integers as qty ---
+    # 1) integer → zwracamy od razu
     if isinstance(expr, int):
         return expr
 
-    # --- FIX: allow missing / None qty (defaults to 1) ---
+    # 2) brak wartości → domyślnie 1
     if expr is None:
         return 1
 
-    # --- must be string at this point ---
-    value = roll(expr, audit=audit, note=label)
-    return value
+    # 3) jeśli expr jest stringiem typu "XdY" → normalny roll
+    if isinstance(expr, str):
+        return roll(expr, audit=audit, note=label)
+
+    # 4) Fallback — cokolwiek innego → 1
+    return 1
 
 
 def _chance_with_audit(pct, audit, label=""):

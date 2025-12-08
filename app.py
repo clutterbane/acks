@@ -1,12 +1,12 @@
 import streamlit as st
 from character_generator import run_generator, ALL_CLASSES   # ← IMPORTUJESZ NORMALNIE
-from treasure.item_generator import generate_item
+from acks.treasure.item_generator import generate_item
 from zero_level_generator import generate_zero_level_character, OCCUPATIONS
 from rival_adventuring_parties import generate_rival_party, format_rival_party
 from terrains import TERRAINS, normalize_terrain, terrain_id
 from lairs_per_hex import LAIRS_PER_HEX, generate_lairs_for_hex
-from treasure.classic_types import generate_classic_treasure
-from treasure.utils import COIN_GP
+from acks.treasure.classic_types import generate_classic_treasure
+from acks.treasure.utils import COIN_GP
 
 st.set_page_config(page_title="ACKS Generators", layout="wide")
 
