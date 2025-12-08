@@ -1,6 +1,5 @@
 import random
-import item_generator
-from item_generator import generate_magic_by_category, _finalize_item_subtype
+from item_generator import generate_item
 from treasure.roller import roll, chance
 from treasure.gems import generate_ornamental, generate_gem, generate_brilliant
 from treasure.jewelry import generate_trinket, generate_jewelry, generate_regalia
