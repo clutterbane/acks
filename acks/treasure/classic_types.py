@@ -1,3 +1,20 @@
+import random
+from treasure.roller import roll, chance
+from treasure.gems import generate_ornamental, generate_gem, generate_brilliant
+from treasure.jewelry import generate_trinket, generate_jewelry, generate_regalia
+from treasure.special.special_treasure import (
+    special_from_cp, special_from_sp, special_from_ep,
+    special_from_gp, special_from_pp,
+    special_from_ornamental, special_from_gem,
+    special_from_brilliant, special_from_trinket,
+    special_from_jewelry, special_from_regalia
+)
+from treasure.utils import coin_gp_value
+from treasure.item_generator import (
+    generate_magic_by_category,
+    _finalize_item_subtype,
+    generate_item,   # jeśli nadal potrzebny
+)
 
 # ============================================================
 # SPECIAL MAPS
@@ -24,27 +41,32 @@ SPECIAL_MAP_GEMLIKE = {
 # HELPERS WITH AUDIT SUPPORT
 # ============================================================
 
-def _roll_with_audit(expr, audit, label):
+def _roll_with_audit(expr, audit, label=""):
+    """
+    Bezpieczny wrapper na roll():
+    - int  → zwraca wartość bez rzutu
+    - None → traktujemy jako 1 (np. domyślna ilość)
+    - str  → przekazujemy do roll("XdY")
+    """
     audit(f"Rolling {label}: {expr}")
 
-    # 1) integer → zwracamy od razu
-    if isinstance(expr, int):
-        return expr
-
-    # 2) brak wartości → domyślnie 1
+    # brak wartości → domyślnie 1
     if expr is None:
         return 1
 
-    # 3) jeśli expr jest stringiem typu "XdY" → normalny roll
-    if isinstance(expr, str):
-        return roll(expr, audit=audit, note=label)
+    # liczba → zwracamy od razu
+    if isinstance(expr, (int, float)):
+        return int(expr)
 
-    # 4) Fallback — cokolwiek innego → 1
-    return 1
+    # na wszelki wypadek rzutujemy na str
+    dice_expr = str(expr)
+    value = roll(dice_expr, audit=audit, note=label)
+    return value
 
 
 def _chance_with_audit(pct, audit, label=""):
     return chance(pct, audit=audit, note=label)
+
 
 def apply_special_to_gemlike(items, audit, special_chance):
     out = []
@@ -75,12 +97,13 @@ def apply_special_to_gemlike(items, audit, special_chance):
 
         for c in converted_list:
             # SAFE NAME EXTRACTION
-            name = c.get("name") if isinstance(c, dict) else str(c)
-            audit(f"     Added special gem/jewelry cargo: {name}")
+            cname = c.get("name") if isinstance(c, dict) else str(c)
+            audit(f"     Added special gem/jewelry cargo: {cname}")
 
         out.extend(converted_list)
 
     return out
+
 
 def apply_special_to_coins(coins_dict, audit, special_pct):
     out = []
@@ -93,8 +116,11 @@ def apply_special_to_coins(coins_dict, audit, special_pct):
         func = SPECIAL_MAP_COINS[coin]
 
         for i in range(thousands):
-            if _chance_with_audit(special_pct, audit,
-                                  f"Convert {coin} pack #{i+1} ({special_pct}%)?"):
+            if _chance_with_audit(
+                special_pct,
+                audit,
+                f"Convert {coin} pack #{i+1} ({special_pct}%)?"
+            ):
                 audit(f" → Converting using {func.__name__}")
                 converted = func()
                 for c in converted:
@@ -113,6 +139,10 @@ def apply_special_to_coins(coins_dict, audit, special_pct):
                 })
 
     return out
+
+# ============================================================
+# CLASSIC TREASURE TABLES A–R
+# ============================================================
 
 CLASSIC_TREASURE = {
 
@@ -380,8 +410,9 @@ CLASSIC_TREASURE = {
         "gems":     {"chance": 60, "dice": "1d6", "category": "brilliants"},
         "jewelry":  {"chance": 80, "dice": "1d4", "category": "jewelry"},
         "magic": {
-            "potion": {"qty": "1d4"},   # ALWAYS
-            "scroll": {"qty": "1d4"},   # ALWAYS
+            # ALWAYS potions & scrolls
+            "potion": {"qty": "1d4"},
+            "scroll": {"qty": "1d4"},
             "any":    {"chance": 50, "qty": 6},
         }
     },
@@ -416,7 +447,6 @@ CLASSIC_TREASURE = {
     },
 }
 
-
 BROAD_MAP = {
     "swords": "sword",
     "armor": "armor",
@@ -439,9 +469,8 @@ ANY_TABLE = [
     "ring",
 ]
 
-
 # ============================================================
-#  HELPERS
+#  MAGIC ITEM HELPERS
 # ============================================================
 
 def _gen_magic_item(category: str, campaign_style: str, audit):
@@ -451,6 +480,9 @@ def _gen_magic_item(category: str, campaign_style: str, audit):
     audit(f" → Magic item: {item.get('name')}")
     return item
 
+# ============================================================
+#  COIN HELPERS
+# ============================================================
 
 def _maybe_roll_coins(entry, audit, coin_name):
     """Roll 1000 × dice if chance succeeds."""
@@ -470,6 +502,10 @@ def _maybe_roll_coins(entry, audit, coin_name):
     total = qty_thousands * 1000
     audit(f" → Result: {total} {coin_name}")
     return total
+
+# ============================================================
+#  GEM / JEWELRY GENERATORS
+# ============================================================
 
 def _generate_gem_by_category(cat, audit):
     audit(f"Generating gem in category '{cat}'")
@@ -499,7 +535,6 @@ def _generate_jewelry_by_category(cat, audit):
 
     audit(f" → Generated jewelry: {j.get('type')} ({j.get('value_gp')} gp)")
     return j
-
 
 # ============================================================
 # MAIN GENERATOR
@@ -533,7 +568,6 @@ def generate_classic_treasure(
     # ---------------------------------------
     # COINS
     # ---------------------------------------
-
     for coin in ["copper", "silver", "electrum", "gold", "platinum"]:
         e = entry[coin]
         if e["chance"] == 0:
@@ -572,24 +606,39 @@ def generate_classic_treasure(
     # ---------------------------------------
     if "magic" in entry:
         audit("Rolling for magic items...")
-        result["magic_items"] = _generate_magic_items_from_entry(entry["magic"], campaign_style, audit)
+        result["magic_items"] = _generate_magic_items_from_entry(
+            entry["magic"],
+            campaign_style,
+            audit
+        )
 
     # ---------------------------------------
     # SPECIAL CONVERSIONS
     # ---------------------------------------
     audit("Applying special coin conversions...")
-    result["special_coins"] = apply_special_to_coins(result["coins"], audit, special_chance)
+    result["special_coins"] = apply_special_to_coins(
+        result["coins"],
+        audit,
+        special_chance
+    )
 
     audit("Applying special gem conversions...")
-    result["special_gems"] = apply_special_to_gemlike(result["gems"], audit, special_chance)
+    result["special_gems"] = apply_special_to_gemlike(
+        result["gems"],
+        audit,
+        special_chance
+    )
 
     audit("Applying special jewelry conversions...")
-    result["special_jewelry"] = apply_special_to_gemlike(result["jewelry"], audit, special_chance)
+    result["special_jewelry"] = apply_special_to_gemlike(
+        result["jewelry"],
+        audit,
+        special_chance
+    )
 
     audit("=== Treasure Generation Completed ===")
 
     return result
-
 
 # ============================================================
 # MAGIC ITEM GENERATION (WITH AUDIT)
@@ -598,11 +647,15 @@ def generate_classic_treasure(
 def _generate_magic_items_from_entry(magic_entry: dict, campaign_style: str, audit):
     results = []
 
-    # SIMPLE FORMAT
+    # --------------------------------------------------
+    # SIMPLE FORMAT:
+    # { "chance": X, "qty": Y, "table": "any"/"potion"/"scroll"/... }
+    # --------------------------------------------------
     if "chance" in magic_entry and "qty" in magic_entry:
         if _chance_with_audit(magic_entry["chance"], audit, "Magic items?"):
-            qty = _roll_with_audit(magic_entry["qty"], audit, "Magic qty") if isinstance(magic_entry["qty"], str) else magic_entry["qty"]
+            qty = _roll_with_audit(magic_entry["qty"], audit, "Magic qty")
             audit(f" → Generating {qty} magic items")
+
             table = magic_entry["table"]
             for _ in range(qty):
                 category = random.choice(ANY_TABLE) if table == "any" else table
@@ -612,10 +665,15 @@ def _generate_magic_items_from_entry(magic_entry: dict, campaign_style: str, aud
             audit(" → No magic items")
         return results
 
-    # COMPLEX FORMAT
+    # --------------------------------------------------
+    # COMPLEX FORMAT:
+    # klucze: weapon_armor, potion, scroll, any, broad, itp.
+    # --------------------------------------------------
     for key, spec in magic_entry.items():
 
-        # weapon_armor
+        # -------------------------
+        # weapon_armor (szansa + qty)
+        # -------------------------
         if key == "weapon_armor":
             if _chance_with_audit(spec["chance"], audit, "weapon_armor?"):
                 qty = _roll_with_audit(spec["qty"], audit, "weapon_armor qty")
@@ -625,7 +683,9 @@ def _generate_magic_items_from_entry(magic_entry: dict, campaign_style: str, aud
                     results.append(_gen_magic_item(category, campaign_style, audit))
             continue
 
-        # any
+        # -------------------------
+        # any (szansa + qty, losowanie z ANY_TABLE)
+        # -------------------------
         if key == "any" and "chance" in spec:
             if _chance_with_audit(spec["chance"], audit, "any-table?"):
                 qty = _roll_with_audit(spec["qty"], audit, "any qty")
@@ -635,15 +695,30 @@ def _generate_magic_items_from_entry(magic_entry: dict, campaign_style: str, aud
                     results.append(_gen_magic_item(category, campaign_style, audit))
             continue
 
-        # always potion/scroll
-        if key in ("potion", "scroll") and "qty" in spec:
-            qty = _roll_with_audit(spec["qty"], audit, f"{key} qty")
+        # -------------------------
+        # ALWAYS potion/scroll (Q, R) – tylko "qty", bez "chance"
+        # -------------------------
+        if key in ("potion", "scroll") and "qty" in spec and "chance" not in spec:
+            qty = _roll_with_audit(spec["qty"], audit, f"{key} qty (always)")
             for _ in range(qty):
                 audit(f" → Chose magic category: {key}")
                 results.append(_gen_magic_item(key, campaign_style, audit))
             continue
 
-        # broad
+        # -------------------------
+        # potion/scroll z szansą (E, H, N, O, itd.)
+        # -------------------------
+        if key in ("potion", "scroll") and "qty" in spec and "chance" in spec:
+            if _chance_with_audit(spec["chance"], audit, f"{key}?"):
+                qty = _roll_with_audit(spec["qty"], audit, f"{key} qty")
+                for _ in range(qty):
+                    audit(f" → Chose magic category: {key}")
+                    results.append(_gen_magic_item(key, campaign_style, audit))
+            continue
+
+        # -------------------------
+        # broad – wybór szerokiej kategorii (R)
+        # -------------------------
         if key == "broad":
             if _chance_with_audit(spec["chance"], audit, "broad?"):
                 qty = _roll_with_audit(spec["qty"], audit, "broad qty")
@@ -654,7 +729,9 @@ def _generate_magic_items_from_entry(magic_entry: dict, campaign_style: str, aud
                     results.append(_gen_magic_item(category, campaign_style, audit))
             continue
 
-        # default (chance + qty)
+        # -------------------------
+        # default (np. inne klucze z szansą + qty)
+        # -------------------------
         if "chance" in spec and "qty" in spec:
             if _chance_with_audit(spec["chance"], audit, f"{key}?"):
                 qty = _roll_with_audit(spec["qty"], audit, f"{key} qty")
